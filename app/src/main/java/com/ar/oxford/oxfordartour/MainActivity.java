@@ -16,7 +16,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -37,15 +36,15 @@ public class MainActivity extends AppCompatActivity {
         int id = v.getId();
         Intent intent;
         switch (id) {
-            case R.id.attraction_tile:
+            case R.id.attraction:
                 /*intent = new Intent(getApplicationContext(), ExploreMode.class);
                 startActivity(intent);*/
                 break;
             case R.id.map:
-                /*intent = new Intent(getApplicationContext(), ClassicModeActivity.class);
-                startActivity(intent);*/
+                intent = new Intent(getApplicationContext(), MapsActivity.class);
+                startActivity(intent);
                 break;
-            case R.id.suggested_tour_tile:
+            case R.id.suggested_tour:
                 /*intent = new Intent(getApplicationContext(), CategoryActivity.class);
                 startActivity(intent);*/
                 break;
@@ -53,7 +52,22 @@ public class MainActivity extends AppCompatActivity {
                 /*intent = new Intent(getApplicationContext(), SettingsActivity.class);
                 startActivity(intent);*/
                 break;
-
+            case R.id.route_planner:
+                /*intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);*/
+                break;
+            case R.id.restaurant:
+                /*intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);*/
+                break;
+            case R.id.nightlife:
+                /*intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);*/
+                break;
+            case R.id.shopping:
+                /*intent = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(intent);*/
+                break;
             default:
                 break;
         }

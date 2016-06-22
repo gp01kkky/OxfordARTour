@@ -48,7 +48,7 @@
                     android:gravity="center">
 
                     <LinearLayout
-                        android:id="@+id/attraction_tile"
+                        android:id="@+id/attraction"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="5dp"
@@ -120,7 +120,7 @@
                     android:gravity="center">
 
                     <LinearLayout
-                        android:id="@+id/suggested_tour_tile"
+                        android:id="@+id/suggested_tour"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="5dp"
@@ -192,7 +192,7 @@
                     android:gravity="center">
 
                     <LinearLayout
-                        android:id="@+id/route_planner_tile"
+                        android:id="@+id/route_planner"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="5dp"
@@ -223,7 +223,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/restaurant_tile"
+                        android:id="@+id/restaurant"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
@@ -264,7 +264,7 @@
                     android:gravity="center">
 
                     <LinearLayout
-                        android:id="@+id/nightlife_tile"
+                        android:id="@+id/nightlife"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginRight="5dp"
@@ -295,7 +295,7 @@
                     </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/shopping_tile"
+                        android:id="@+id/shopping"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_marginLeft="5dp"
