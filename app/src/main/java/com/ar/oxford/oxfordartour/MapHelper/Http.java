@@ -21,6 +21,7 @@ public class Http {
         String data = "";
         try {
             URL url = new URL(httpUrl);
+            // create http connection to communicate with url
             httpURLConnection = (HttpURLConnection) url.openConnection();
             httpURLConnection.connect();
             inputStream = httpURLConnection.getInputStream();
