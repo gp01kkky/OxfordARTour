@@ -13,11 +13,11 @@ import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -28,24 +28,29 @@ import android.widget.Toast;
 import com.ar.oxford.oxfordartour.MapHelper.GenerateGoogleMapApiUrl;
 import com.ar.oxford.oxfordartour.MapHelper.GooglePlacesAutocompleteAdapter;
 import com.ar.oxford.oxfordartour.MapHelper.GooglePlacesReadTask;
+import com.ar.oxford.oxfordartour.MapHelper.OnTaskCompleted;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.BooleanResult;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements LocationListener {
+public class MapsActivity extends FragmentActivity implements LocationListener,OnTaskCompleted {
     private static Context context;
     private GoogleMap googleMap;
+
+
+    private UiSettings googleMapUiSettings;
+
     private GenerateGoogleMapApiUrl generateGoogleAPIHelper;
     private static final String GOOGLE_API_KEY = "AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
     EditText placeText;
@@ -54,8 +59,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
     private int PROXIMITY_RADIUS = 50; // in metres
     ArrayList<LatLng> markerPoints; // for multiple waypoint route
 
+    private boolean displayMenu = true;
 
     private BottomSheetDialog bottomDialog;
+    private Button showList;
+    private boolean searchPlaceCompleted = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +82,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
         setContentView(R.layout.activity_maps);
         context = MapsActivity.this;
 
+        showList = (Button) findViewById(R.id.show_list);
 
         // to check for permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -85,9 +95,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
         SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.googleMap);
 
+
         googleMap = fragment.getMap();
         // allows the ui of mylocation
         googleMap.setMyLocationEnabled(true);
+        googleMapUiSettings = googleMap.getUiSettings();
+        googleMap.setPadding(0,200,0,0);
+        googleMapUiSettings.setCompassEnabled(true);
+
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         String bestProvider = locationManager.getBestProvider(criteria, true);
@@ -108,16 +123,19 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
             }
         });
 
+        showList.setVisibility(View.GONE);
+
+
         /*
         This is for route activity
-         */
+         *//*
         markerPoints = new ArrayList<LatLng>();
         // Setting onclick event listener for the map
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            /*
+            *//*
             onMapClick will return the geocoordinate of the point tapped on the map
-             */
+             *//*
             @Override
             public void onMapClick(LatLng point) {
                 // Already 10 locations with 8 waypoints and 1 start location and 1 end location.
@@ -134,11 +152,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
                 // Setting the position of the marker
                 options.position(point);
 
-                /**
+                *//**
                  * For the start location, the color of marker is GREEN and
                  * for the end location, the color of marker is RED and
                  * for the rest of markers, the color is AZURE
-                 */
+                 *//*
                 if (markerPoints.size() == 1) {
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 } else if (markerPoints.size() == 2) {
@@ -150,7 +168,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
                 // Add new marker to the Google Map Android API V2
                 googleMap.addMarker(options);
             }
-        });
+        });*/
 
         // The map will be cleared on long click
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -161,13 +179,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
                 googleMap.clear();
 
                 // Removes all the points in the ArrayList
-                markerPoints.clear();
+                //markerPoints.clear();
                 //createDialog();
             }
         });
 
+        //------- For Routing----------------------
         // Getting reference to Button
-        Button btnDraw = (Button)findViewById(R.id.btn_draw);
+        final Button btnDraw = (Button)findViewById(R.id.btn_draw);
 
         // Click event handler for Button btn_draw
         btnDraw.setOnClickListener(new View.OnClickListener() {
@@ -194,13 +213,18 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
                 }
             }
         });
+        //--------------- end of routing------------------
 
         //-----------Auto Complete Code----------------
 
         final AutoCompleteTextView textView = (AutoCompleteTextView)
                 findViewById(R.id.autocomplete_textview);
-        textView.setAdapter(new GooglePlacesAutocompleteAdapter(this,R.layout.support_simple_spinner_dropdown_item,latitude,longitude));
 
+        Animation anim = AnimationUtils.loadAnimation(this, R.anim.fly_in_anim_from_top);
+        textView.startAnimation(anim);
+
+
+        textView.setAdapter(new GooglePlacesAutocompleteAdapter(this,R.layout.support_simple_spinner_dropdown_item,latitude,longitude));
         textView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -215,6 +239,42 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
 
         //----------End of Auto complete implementation---------------
 
+
+        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
+
+            @Override
+            public void onMapClick(LatLng latLng) {
+                if(displayMenu)
+                {
+                    Animation anim1 = AnimationUtils.loadAnimation(context, R.anim.fly_out_anim_to_top);
+                    Animation anim2 = AnimationUtils.loadAnimation(context, R.anim.fly_out_anim_to_bottom);
+
+                    textView.startAnimation(anim1);
+                    btnDraw.startAnimation(anim2);
+                    Log.e("AnimFlyOut","");
+                    displayMenu = false;
+                    textView.setVisibility(View.GONE);
+                    btnDraw.setVisibility(View.GONE);
+                    showList.setVisibility(View.GONE);
+
+                }
+                else
+                {
+                    Animation anim1 = AnimationUtils.loadAnimation(context, R.anim.fly_in_anim_from_top);
+                    Animation anim2 = AnimationUtils.loadAnimation(context, R.anim.fly_in_anim_from_bottom);
+
+                    textView.startAnimation(anim1);
+                    btnDraw.startAnimation(anim2);
+                    Log.e("AnimFlyIn","");
+                    textView.setVisibility(View.VISIBLE);
+                    btnDraw.setVisibility(View.VISIBLE);
+                    if(searchPlaceCompleted)
+                        showList.setVisibility(View.VISIBLE);
+                    displayMenu = true;
+                }
+            }
+        });
+
     }
 
 
@@ -226,42 +286,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
 
         return false;
     }
-    /*
-    TODO: edit this dialog box
-     */
-    /*private void createDialog() {
-        if (dismissDialog()) {
-            return;
-        }
 
-        List<SampleModel> list = new ArrayList<>();
-        list.add(new SampleModel(R.string.share, R.mipmap.ic_launcher));
-        list.add(new SampleModel(R.string.upload, R.mipmap.ic_launcher));
-        list.add(new SampleModel(R.string.copy, R.mipmap.ic_launcher));
-        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
-        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
-        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
-        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
-
-        SampleSheetAdapter adapter = new SampleSheetAdapter(list);
-        adapter.setOnItemClickListener(new SampleSheetAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(SampleSheetAdapter.ItemHolder item, int position) {
-                //dismissDialog();
-            }
-        });
-
-        View view = getLayoutInflater().inflate(R.layout.sheet_main, null);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
-
-        bottomDialog = new BottomSheetDialog(this);
-        bottomDialog.setContentView(view);
-        bottomDialog.show();
-    }*/
 
 
     /*
@@ -283,6 +308,19 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
         toPass[2] = GooglePlacesReadTask.PLACE_QUERY;
         toPass[3] = context;
         googlePlacesReadTask.execute(toPass);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            if(searchPlaceCompleted) {
+                googleMap.clear();
+                showList.setVisibility(View.GONE);
+                searchPlaceCompleted = false;
+                return false;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /*
@@ -401,6 +439,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
     }
 
 
+    @Override
+    public void onTaskCompleted(Boolean response) {
+        if(response)
+        {
+            searchPlaceCompleted = true;
+            showList.setVisibility(View.VISIBLE);
+            //Toast.makeText(context, "Task Completed", Toast.LENGTH_LONG).show();
+
+        }
+    }
 
 }
 
