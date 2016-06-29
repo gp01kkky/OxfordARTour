@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/** A class to parse the Google Places in JSON format */
+/** */
 public class DirectionDisplayTask extends AsyncTask<Object, Integer, List<List<HashMap<String,String>>> > {
 
     GoogleMap googleMap;
@@ -77,5 +77,7 @@ public class DirectionDisplayTask extends AsyncTask<Object, Integer, List<List<H
         // Drawing polyline in the Google Map for the i-th route
         googleMap.addPolyline(lineOptions);
     }
+
+
 }
 

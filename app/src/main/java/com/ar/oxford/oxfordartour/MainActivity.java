@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
         Intent intent;
         switch (id) {
             case R.id.attraction:
-                /*intent = new Intent(getApplicationContext(), ExploreMode.class);
-                startActivity(intent);*/
+                intent = new Intent(getApplicationContext(), PlacePickerActivity.class);
+                startActivity(intent);
                 break;
             case R.id.map:
                 intent = new Intent(getApplicationContext(), MapsActivity.class);

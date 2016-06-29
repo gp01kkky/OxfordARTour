@@ -54,11 +54,15 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
+            android:value="AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc" />
 
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"></activity>
+
+        <activity
+            android:name=".PlacePickerActivity">
+        </activity>
     </application>
 
 </manifest>

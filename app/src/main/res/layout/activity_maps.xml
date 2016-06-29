@@ -5,20 +5,21 @@
     tools:context="com.ar.oxford.oxfordartour.MapsActivity">
 
 
-
-    <EditText
+    <AutoCompleteTextView
         android:imeOptions="actionSearch"
         android:inputType="text"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Find Places"
-        android:id="@+id/placeText" />
+        android:id="@+id/autocomplete_textview" >
+        <requestFocus />
+    </AutoCompleteTextView>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/googleMap"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/placeText"
+        android:layout_below="@id/autocomplete_textview"
         class="com.google.android.gms.maps.SupportMapFragment" />
 
     <Button

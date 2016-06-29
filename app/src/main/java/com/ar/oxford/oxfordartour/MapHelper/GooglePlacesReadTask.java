@@ -1,5 +1,6 @@
 package com.ar.oxford.oxfordartour.MapHelper;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -14,6 +15,7 @@ public class GooglePlacesReadTask extends AsyncTask<Object,Integer,String> {
 
     String googlePlacesData = null;
     GoogleMap googleMap;
+    Context context;
     int queryType;
     public static final int PLACE_QUERY = 0;
     public static final int DIRECTION_QUERY = 1;
@@ -25,6 +27,7 @@ public class GooglePlacesReadTask extends AsyncTask<Object,Integer,String> {
             googleMap = (GoogleMap) params[0];
             String googlePlacesUrl = (String) params[1];
             queryType = (int) params[2];
+            context = (Context) params[3];
             Http http = new Http();
             googlePlacesData = http.read(googlePlacesUrl);
         } catch (Exception e) {
@@ -39,19 +42,20 @@ public class GooglePlacesReadTask extends AsyncTask<Object,Integer,String> {
      */
     @Override
     protected void onPostExecute(String result) {
-        PlacesDisplayTask placesDisplayTask = new PlacesDisplayTask();
-        DirectionDisplayTask directionDisplayTask = new DirectionDisplayTask();
-        Object[] toPass = new Object[3];
+        Object[] toPass = new Object[4];
         toPass[0] = googleMap;
         toPass[1] = result;
         toPass[2] = queryType;
+        toPass[3] = context;
 
         switch ((int) toPass[2])
         {
             case PLACE_QUERY:
+                PlacesDisplayTask placesDisplayTask = new PlacesDisplayTask();
                 placesDisplayTask.execute(toPass);
                 break;
             case DIRECTION_QUERY:
+                DirectionDisplayTask directionDisplayTask = new DirectionDisplayTask();
                 directionDisplayTask.execute(toPass);
                 break;
             default:

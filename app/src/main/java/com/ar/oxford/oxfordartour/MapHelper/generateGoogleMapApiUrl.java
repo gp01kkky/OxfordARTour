@@ -14,49 +14,62 @@ public class GenerateGoogleMapApiUrl {
     public static final int NEARBY_PLACES = 0;
     public static final int TEXT_SEARCH = 1;
     public static final int SEARCH_BY_TYPE = 2;
+    public static final int SEARCH_BY_GEOCOORDINATE = 3;
+    public static final int AUTOCOMPLETE = 4;
 
     private static final String GOOGLE_API_KEY = "AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
-    private int PROXIMITY_RADIUS = 50; // in metres
+    private int PROXIMITY_RADIUS = 5000; // in metres
 
     public StringBuilder getGoogleMapPlacesQueryURL(String userQuery, int type, double latitude, double longitude)
     {
-        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/");
-
+        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/");
+        String query = userQuery.trim();
+        query = query.replaceAll("\\s","+");
         switch (type)
         {
             case NEARBY_PLACES:
-                googlePlacesUrl.append("nearbysearch/json?");
-                googlePlacesUrl.append("location=" + latitude + "," + longitude);
+                googlePlacesUrl.append("place/nearbysearch/json?");
+                googlePlacesUrl.append("sensor=true");
+                googlePlacesUrl.append("&location=" + latitude + "," + longitude);
                 googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
-                googlePlacesUrl.append("&sensor=true");
                 googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
                 break;
             case TEXT_SEARCH:
-                googlePlacesUrl.append("textsearch/json?");
-                googlePlacesUrl.append("query=" + userQuery);
+                googlePlacesUrl.append("place/textsearch/json?");
+                googlePlacesUrl.append("query=" + query);
+                googlePlacesUrl.append("&sensor=true");
                 googlePlacesUrl.append("&location=" + latitude + "," + longitude);
                 googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
-                googlePlacesUrl.append("&sensor=true");
                 googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
                 break;
             case SEARCH_BY_TYPE:
-                googlePlacesUrl.append("nearbysearch/json?");
+                googlePlacesUrl.append("place/nearbysearch/json?");
+                googlePlacesUrl.append("&sensor=true");
                 googlePlacesUrl.append("location=" + latitude + "," + longitude);
                 googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
-                googlePlacesUrl.append("&type=" + userQuery);
-                googlePlacesUrl.append("&sensor=true");
+                googlePlacesUrl.append("&type=" + query);
                 googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
                 break;
+            case SEARCH_BY_GEOCOORDINATE:
+                googlePlacesUrl.append("geocode/json?");
+                googlePlacesUrl.append("latlng=" + latitude + "," + longitude);
+                googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
+                break;
+            case AUTOCOMPLETE:
+                googlePlacesUrl.append("place/autocomplete/json?");
+                googlePlacesUrl.append("input=" + query);
+                googlePlacesUrl.append("&sensor=true");
+                googlePlacesUrl.append("&location=" + latitude +","+longitude);
+                googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
+                googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
             default:
                 googlePlacesUrl.append("nearbysearch/json?");
+                googlePlacesUrl.append("&sensor=true");
                 googlePlacesUrl.append("location=" + latitude + "," + longitude);
                 googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
-                googlePlacesUrl.append("&type=" + userQuery);
-                googlePlacesUrl.append("&sensor=true");
+                googlePlacesUrl.append("&type=" + query);
                 googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
                 break;
-
-
         }
         return googlePlacesUrl;
     }
@@ -70,7 +83,7 @@ public class GenerateGoogleMapApiUrl {
         String str_dest = "destination="+dest.latitude+","+dest.longitude;
 
         // Sensor enabled
-        String sensor = "sensor=false";
+        String sensor = "sensor=true";
 
         // Waypoints
         String waypoints = "";

@@ -3,28 +3,30 @@ package com.ar.oxford.oxfordartour;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ar.oxford.oxfordartour.MapHelper.GenerateGoogleMapApiUrl;
-import com.ar.oxford.oxfordartour.MapHelper.GoogleDirectionParser;
+import com.ar.oxford.oxfordartour.MapHelper.GooglePlacesAutocompleteAdapter;
 import com.ar.oxford.oxfordartour.MapHelper.GooglePlacesReadTask;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -32,18 +34,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolylineOptions;
 
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,11 +54,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
     private int PROXIMITY_RADIUS = 50; // in metres
     ArrayList<LatLng> markerPoints; // for multiple waypoint route
 
+
+    private BottomSheetDialog bottomDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        generateGoogleAPIHelper = new GenerateGoogleMapApiUrl();
+        generateGoogleAPIHelper = new GenerateGoogleMapApiUrl(); // helper for google api
         // Request permissions to support Android Marshmallow and above devices
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermissions();
@@ -75,16 +71,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
             finish();
         }
         setContentView(R.layout.activity_maps);
-        context = getApplicationContext();
-        // edittext box to get the text and button
-        placeText = (EditText) findViewById(R.id.placeText);
-        //Button btnFind = (Button) findViewById(R.id.btnFind);
+        context = MapsActivity.this;
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.googleMap);
-
-        googleMap = fragment.getMap();
 
         // to check for permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -93,9 +81,13 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
                     REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
         }
 
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.googleMap);
+
+        googleMap = fragment.getMap();
         // allows the ui of mylocation
         googleMap.setMyLocationEnabled(true);
-
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         String bestProvider = locationManager.getBestProvider(criteria, true);
@@ -105,19 +97,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
         }
         locationManager.requestLocationUpdates(bestProvider, 20000, 0, this);
 
-        placeText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        // this activity is registered when user click on a ground overlay
+        googleMap.setOnGroundOverlayClickListener(new GoogleMap.OnGroundOverlayClickListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                    //Toast.makeText(context, "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
-                    performSearch();
-                    return true;
-                }
-                return false;
+            public void onGroundOverlayClick(GroundOverlay groundOverlay) {
+                LatLng position = groundOverlay.getPosition();
+                Toast.makeText(context, "this is my Toast message!!! =)", Toast.LENGTH_LONG).show();
+                performGeolocationSearch(position);
+
             }
         });
-
-
 
         /*
         This is for route activity
@@ -173,6 +162,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
 
                 // Removes all the points in the ArrayList
                 markerPoints.clear();
+                //createDialog();
             }
         });
 
@@ -192,12 +182,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
                     // Getting URL to the Google Directions API
                     String url = generateGoogleAPIHelper.getDirectionsUrl(origin, dest,markerPoints);
 
-
                     GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
-                    Object[] toPass = new Object[3];
+                    Object[] toPass = new Object[4];
                     toPass[0] = googleMap;
                     toPass[1] = url;
                     toPass[2] = GooglePlacesReadTask.DIRECTION_QUERY;
+                    toPass[3] = context;
                     googlePlacesReadTask.execute(toPass);
                     // Start downloading json data from Google Directions API
                     //downloadTask.execute(url);
@@ -205,28 +195,113 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
             }
         });
 
+        //-----------Auto Complete Code----------------
+
+        final AutoCompleteTextView textView = (AutoCompleteTextView)
+                findViewById(R.id.autocomplete_textview);
+        textView.setAdapter(new GooglePlacesAutocompleteAdapter(this,R.layout.support_simple_spinner_dropdown_item,latitude,longitude));
+
+        textView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+               if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                   // if user click enter search
+                    performNearbyTextSearch(textView.getText().toString());
+                    return true;
+                }
+                return false;
+                }
+            });
+
+        //----------End of Auto complete implementation---------------
+
     }
 
 
+    /*private boolean dismissDialog() {
+        if (bottomDialog != null && bottomDialog.isShowing()) {
+            bottomDialog.dismiss();
+            return true;
+        }
+
+        return false;
+    }
+    /*
+    TODO: edit this dialog box
+     */
+    /*private void createDialog() {
+        if (dismissDialog()) {
+            return;
+        }
+
+        List<SampleModel> list = new ArrayList<>();
+        list.add(new SampleModel(R.string.share, R.mipmap.ic_launcher));
+        list.add(new SampleModel(R.string.upload, R.mipmap.ic_launcher));
+        list.add(new SampleModel(R.string.copy, R.mipmap.ic_launcher));
+        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
+        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
+        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
+        list.add(new SampleModel(R.string.print, R.mipmap.ic_launcher));
+
+        SampleSheetAdapter adapter = new SampleSheetAdapter(list);
+        adapter.setOnItemClickListener(new SampleSheetAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(SampleSheetAdapter.ItemHolder item, int position) {
+                //dismissDialog();
+            }
+        });
+
+        View view = getLayoutInflater().inflate(R.layout.sheet_main, null);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+
+        bottomDialog = new BottomSheetDialog(this);
+        bottomDialog.setContentView(view);
+        bottomDialog.show();
+    }*/
 
 
     /*
     Perform search query when user entered text
      */
-    private void performSearch()
+    private void performGeolocationSearch(LatLng location)
     {
         // build the query url
         String userQuery = placeText.getText().toString();
+        GenerateGoogleMapApiUrl urlGenerator = new GenerateGoogleMapApiUrl();
+        StringBuilder googlePlacesUrl = urlGenerator.getGoogleMapPlacesQueryURL("",GenerateGoogleMapApiUrl.SEARCH_BY_GEOCOORDINATE,location.latitude,location.longitude);
+        Log.d("Google Query",googlePlacesUrl.toString());
+
+        // create the asynctask
+        GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
+        Object[] toPass = new Object[4];
+        toPass[0] = googleMap;
+        toPass[1] = googlePlacesUrl.toString();
+        toPass[2] = GooglePlacesReadTask.PLACE_QUERY;
+        toPass[3] = context;
+        googlePlacesReadTask.execute(toPass);
+    }
+
+    /*
+    Perform search query when user entered text
+     */
+    private void performNearbyTextSearch(String userQuery)
+    {
+
         GenerateGoogleMapApiUrl urlGenerator = new GenerateGoogleMapApiUrl();
         StringBuilder googlePlacesUrl = urlGenerator.getGoogleMapPlacesQueryURL(userQuery,GenerateGoogleMapApiUrl.TEXT_SEARCH,latitude,longitude);
         Log.d("Google Query",googlePlacesUrl.toString());
 
         // create the asynctask
         GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
-        Object[] toPass = new Object[3];
+        Object[] toPass = new Object[4];
         toPass[0] = googleMap;
         toPass[1] = googlePlacesUrl.toString();
         toPass[2] = GooglePlacesReadTask.PLACE_QUERY;
+        toPass[3] = context;
         googlePlacesReadTask.execute(toPass);
     }
 
@@ -324,4 +399,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener {
     public void onProviderDisabled(String provider) {
 
     }
+
+
+
 }
+
+
+
