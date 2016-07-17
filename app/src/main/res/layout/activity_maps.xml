@@ -2,8 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.ar.oxford.oxfordartour.MapsActivity">
+    tools:context="com.ar.oxford.oxfordtourar.MapsActivity">
 
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/googleMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        class="com.google.android.gms.maps.SupportMapFragment" />
 
     <AutoCompleteTextView
         android:imeOptions="actionSearch"
@@ -11,24 +16,54 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:hint="Find Places"
+        android:background="#0000A0"
         android:id="@+id/autocomplete_textview" >
         <requestFocus />
     </AutoCompleteTextView>
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/googleMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/autocomplete_textview"
-        class="com.google.android.gms.maps.SupportMapFragment" />
 
-    <Button
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp" >
+
+        <ImageView
+            android:id="@+id/imgMyLocation"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/my_location_icon" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp" >
+
+
+    </LinearLayout>
+
+    <!--<Button
         android:id="@+id/btn_draw"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Draw"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />-->
+
+    <Button
+        android:id="@+id/show_list"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Show List"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true" />
+
+
 
 </RelativeLayout>
 

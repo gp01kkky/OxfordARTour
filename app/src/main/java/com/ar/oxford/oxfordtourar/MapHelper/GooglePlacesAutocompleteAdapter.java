@@ -1,12 +1,10 @@
-package com.ar.oxford.oxfordartour.MapHelper;
+package com.ar.oxford.oxfordtourar.MapHelper;
 
 import android.content.Context;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
-
-import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,9 +15,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by Kelvin Khoo on 27/06/2016.

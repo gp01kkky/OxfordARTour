@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour;
+package com.ar.oxford.oxfordtourar;
 
 /**
  * Created by Günhan on 28.02.2016.

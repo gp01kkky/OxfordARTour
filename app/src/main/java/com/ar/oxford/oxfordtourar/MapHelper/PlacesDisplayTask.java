@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour.MapHelper;
+package com.ar.oxford.oxfordtourar.MapHelper;
 
 import android.app.ActivityManager;
 import android.content.Context;
@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Toast;
 
-import com.ar.oxford.oxfordartour.R;
+import com.ar.oxford.oxfordtourar.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -32,6 +32,7 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
     Context context;
     BottomSheetDialog placesListDialog;
 
+    private OnTaskCompleted taskCompleted;
 
     protected List<Place> doInBackground(Object... params) {
         //params[1] = result returned
@@ -42,7 +43,10 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
             googleMap = (GoogleMap) params[0];
             googlePlacesJson = new JSONObject((String) params[1]);
             context = (Context) params[3];
+            this.taskCompleted = (OnTaskCompleted) params[3];
             googlePlacesList = placeJsonParser.parse(googlePlacesJson);
+            Log.e("",googlePlacesJson.toString());
+
         } catch (Exception e) {
             Log.d("Exception", e.toString());
         }
@@ -70,6 +74,8 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
             googleMap.addMarker(markerOptions);
         }
         createDialog(list);
+
+
 
     }
 
@@ -114,5 +120,7 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
         placesListDialog = new BottomSheetDialog(context);
         placesListDialog.setContentView(view);
         placesListDialog.show();
+        taskCompleted.onTaskCompleted(true, placesListDialog, view);
+
     }
 }

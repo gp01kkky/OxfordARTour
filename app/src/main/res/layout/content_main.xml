@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/oxford_portrait_min"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="com.ar.oxford.oxfordartour.MainActivity"
+    tools:context="com.ar.oxford.oxfordtourar.MainActivity"
     tools:showIn="@layout/activity_main">
 
     <RelativeLayout

@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour.MapHelper;
+package com.ar.oxford.oxfordtourar.MapHelper;
 
 import com.google.android.gms.maps.model.LatLng;
 

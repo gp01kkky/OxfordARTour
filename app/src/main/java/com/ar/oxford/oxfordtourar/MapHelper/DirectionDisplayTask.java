@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour.MapHelper;
+package com.ar.oxford.oxfordtourar.MapHelper;
 
 /**
  * Created by Kelvin Khoo on 23/06/2016.

@@ -16,6 +16,7 @@
         android:layout_marginTop="8dp"
         android:background="#FFFFFF"
         android:scrollbars="vertical"
-        app:behavior_peekHeight="120dp"/>
+        app:behavior_peekHeight="120dp"
+        app:behavior_hideable="false"/>
 
 </FrameLayout>

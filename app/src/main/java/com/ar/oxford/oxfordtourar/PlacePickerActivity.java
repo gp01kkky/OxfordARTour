@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour;
+package com.ar.oxford.oxfordtourar;
 
 import android.content.Intent;
 import android.os.Bundle;

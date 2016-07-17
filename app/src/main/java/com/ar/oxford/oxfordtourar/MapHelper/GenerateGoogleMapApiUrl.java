@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour.MapHelper;
+package com.ar.oxford.oxfordtourar.MapHelper;
 
 import android.util.Log;
 
@@ -44,7 +44,6 @@ public class GenerateGoogleMapApiUrl {
                 break;
             case SEARCH_BY_TYPE:
                 googlePlacesUrl.append("place/nearbysearch/json?");
-                googlePlacesUrl.append("&sensor=true");
                 googlePlacesUrl.append("location=" + latitude + "," + longitude);
                 googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
                 googlePlacesUrl.append("&type=" + query);

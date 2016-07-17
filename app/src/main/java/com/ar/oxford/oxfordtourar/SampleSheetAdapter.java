@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour;
+package com.ar.oxford.oxfordtourar;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;

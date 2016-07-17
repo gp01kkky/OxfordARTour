@@ -1,4 +1,4 @@
-package com.ar.oxford.oxfordartour;
+package com.ar.oxford.oxfordtourar;
 
 import android.Manifest;
 import android.content.Context;
@@ -9,8 +9,9 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -25,45 +26,49 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ar.oxford.oxfordartour.MapHelper.GenerateGoogleMapApiUrl;
-import com.ar.oxford.oxfordartour.MapHelper.GooglePlacesAutocompleteAdapter;
-import com.ar.oxford.oxfordartour.MapHelper.GooglePlacesReadTask;
-import com.ar.oxford.oxfordartour.MapHelper.OnTaskCompleted;
+
+import com.ar.oxford.oxfordtourar.MapHelper.GenerateGoogleMapApiUrl;
+import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesAutocompleteAdapter;
+import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesReadTask;
+import com.ar.oxford.oxfordtourar.MapHelper.OnTaskCompleted;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.BooleanResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MapsActivity extends FragmentActivity implements LocationListener,OnTaskCompleted {
+public class MapsActivity extends FragmentActivity implements LocationListener,OnTaskCompleted, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
     private static Context context;
     private GoogleMap googleMap;
-
-
+    private BottomSheetDialog placeListDialog;
     private UiSettings googleMapUiSettings;
-
     private GenerateGoogleMapApiUrl generateGoogleAPIHelper;
-    private static final String GOOGLE_API_KEY = "AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
+    GoogleApiClient mGoogleApiClient = null;
+
     EditText placeText;
     double latitude = 0;
     double longitude = 0;
-    private int PROXIMITY_RADIUS = 50; // in metres
+
     ArrayList<LatLng> markerPoints; // for multiple waypoint route
 
     private boolean displayMenu = true;
-
     private BottomSheetDialog bottomDialog;
     private Button showList;
     private boolean searchPlaceCompleted = false;
+    private View placesListView;
+    Location location = null;
 
 
     @Override
@@ -74,22 +79,32 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         if (Build.VERSION.SDK_INT >= 23) {
             checkPermissions();
         }
-
         //show error dialog if GoolglePlayServices not available
         if (!isGooglePlayServicesAvailable()) {
             finish();
         }
+
         setContentView(R.layout.activity_maps);
         context = MapsActivity.this;
 
         showList = (Button) findViewById(R.id.show_list);
 
+
+        if(mGoogleApiClient==null)
+        {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+
         // to check for permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
                     REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
-        }
+        }*/
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager()
@@ -106,11 +121,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
         String bestProvider = locationManager.getBestProvider(criteria, true);
-        Location location = locationManager.getLastKnownLocation(bestProvider); // get location
+        location = locationManager.getLastKnownLocation(bestProvider); // get location
         if (location != null) {
             onLocationChanged(location);
         }
-        locationManager.requestLocationUpdates(bestProvider, 20000, 0, this);
+        else
+        {
+            locationManager.requestLocationUpdates(bestProvider, 20000, 0, this);
+        }
 
         // this activity is registered when user click on a ground overlay
         googleMap.setOnGroundOverlayClickListener(new GoogleMap.OnGroundOverlayClickListener() {
@@ -126,16 +144,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         showList.setVisibility(View.GONE);
 
 
-        /*
-        This is for route activity
-         *//*
+        //This is for route activity
+
         markerPoints = new ArrayList<LatLng>();
         // Setting onclick event listener for the map
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
-            *//*
-            onMapClick will return the geocoordinate of the point tapped on the map
-             *//*
+
+            //onMapClick will return the geocoordinate of the point tapped on the map
+
             @Override
             public void onMapClick(LatLng point) {
                 // Already 10 locations with 8 waypoints and 1 start location and 1 end location.
@@ -152,11 +169,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                 // Setting the position of the marker
                 options.position(point);
 
-                *//**
+               /* *
                  * For the start location, the color of marker is GREEN and
                  * for the end location, the color of marker is RED and
-                 * for the rest of markers, the color is AZURE
-                 *//*
+                 * for the rest of markers, the color is AZURE*/
+
                 if (markerPoints.size() == 1) {
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 } else if (markerPoints.size() == 2) {
@@ -168,7 +185,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                 // Add new marker to the Google Map Android API V2
                 googleMap.addMarker(options);
             }
-        });*/
+        });
 
         // The map will be cleared on long click
         googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
@@ -215,6 +232,17 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         });
         //--------------- end of routing------------------
 
+        showList.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                if(placeListDialog!=null)
+                {
+                    //placeListDialog.setContentView(placesListView);
+
+                    placeListDialog.show();
+                }
+            }
+        });
         //-----------Auto Complete Code----------------
 
         final AutoCompleteTextView textView = (AutoCompleteTextView)
@@ -420,7 +448,8 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         longitude = location.getLongitude();
         LatLng latLng = new LatLng(latitude, longitude);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng)); //change the focus of the camera
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(20));
+
     }
 
     @Override
@@ -440,16 +469,50 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
 
 
     @Override
-    public void onTaskCompleted(Boolean response) {
+    public void onTaskCompleted(Boolean response, BottomSheetDialog placeListDialog, View placesListView) {
         if(response)
         {
             searchPlaceCompleted = true;
             showList.setVisibility(View.VISIBLE);
             //Toast.makeText(context, "Task Completed", Toast.LENGTH_LONG).show();
+            this.placeListDialog = placeListDialog;
+            this.placesListView = placesListView;
+        }
+    }
+
+    protected void onStart() {
+        mGoogleApiClient.connect();
+        super.onStart();
+    }
+
+    protected void onStop() {
+        mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        location = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (location != null) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            LatLng latLng = new LatLng(latitude, longitude);
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng)); //change the focus of the camera
+            googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
         }
     }
 
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
 }
 
 
