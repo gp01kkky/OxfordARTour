@@ -1,6 +1,7 @@
 package com.ar.oxford.oxfordtourar;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -14,35 +15,40 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.ar.oxford.oxfordtourar.MapHelper.GenerateGoogleMapApiUrl;
 import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesAutocompleteAdapter;
+import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesDisplayAdapter;
 import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesReadTask;
 import com.ar.oxford.oxfordtourar.MapHelper.OnTaskCompleted;
+import com.ar.oxford.oxfordtourar.MapHelper.Place;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,12 +66,15 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
     EditText placeText;
     double latitude = 0;
     double longitude = 0;
+    List<Place> mPlaceList;
 
     ArrayList<LatLng> markerPoints; // for multiple waypoint route
 
     private boolean displayMenu = true;
     private BottomSheetDialog bottomDialog;
-    private Button showList;
+    private Button bottomButton;
+    private ImageView imgMyLocation;
+    private RelativeLayout bottomBar = null;
     private boolean searchPlaceCompleted = false;
     private View placesListView;
     Location location = null;
@@ -86,10 +95,12 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
 
         setContentView(R.layout.activity_maps);
         context = MapsActivity.this;
+        imgMyLocation = (ImageView) findViewById(R.id.imgMyLocation);
+        bottomButton = (Button) findViewById(R.id.show_list);
+        bottomBar = (RelativeLayout) findViewById(R.id.bottom_bar_layout);
 
-        showList = (Button) findViewById(R.id.show_list);
 
-
+        // This is needed to get last known location
         if(mGoogleApiClient==null)
         {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -98,18 +109,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                     .addApi(LocationServices.API)
                     .build();
         }
-
-        // to check for permission
-        /*if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
-                    REQUEST_CODE_ASK_MULTIPLE_PERMISSIONS);
-        }*/
+        //------------------------------------------------
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment fragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.googleMap);
-
 
         googleMap = fragment.getMap();
         // allows the ui of mylocation
@@ -117,6 +121,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         googleMapUiSettings = googleMap.getUiSettings();
         googleMap.setPadding(0,200,0,0);
         googleMapUiSettings.setCompassEnabled(true);
+        googleMapUiSettings.setMyLocationButtonEnabled(false);
 
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         Criteria criteria = new Criteria();
@@ -141,14 +146,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
             }
         });
 
-        showList.setVisibility(View.GONE);
+        //bottomButton.setVisibility(View.GONE);
 
 
         //This is for route activity
 
-        markerPoints = new ArrayList<LatLng>();
+        //markerPoints = new ArrayList<LatLng>();
         // Setting onclick event listener for the map
-        googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+        /*googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
 
             //onMapClick will return the geocoordinate of the point tapped on the map
@@ -174,7 +179,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                  * for the end location, the color of marker is RED and
                  * for the rest of markers, the color is AZURE*/
 
-                if (markerPoints.size() == 1) {
+                /*if (markerPoints.size() == 1) {
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                 } else if (markerPoints.size() == 2) {
                     options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
@@ -185,28 +190,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                 // Add new marker to the Google Map Android API V2
                 googleMap.addMarker(options);
             }
-        });
+        });*/
 
-        // The map will be cleared on long click
-        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
-            @Override
-            public void onMapLongClick(LatLng point) {
-                // Removes all the points from Google Map
-                googleMap.clear();
-
-                // Removes all the points in the ArrayList
-                //markerPoints.clear();
-                //createDialog();
-            }
-        });
 
         //------- For Routing----------------------
         // Getting reference to Button
-        final Button btnDraw = (Button)findViewById(R.id.btn_draw);
+        //final Button btnDraw = (Button)findViewById(R.id.btn_draw);
 
         // Click event handler for Button btn_draw
-        btnDraw.setOnClickListener(new View.OnClickListener() {
+        /*btnDraw.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -229,17 +222,34 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                     //downloadTask.execute(url);
                 }
             }
-        });
+        });*/
         //--------------- end of routing------------------
+        // The map will be cleared on long click
+        googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
 
-        showList.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onMapLongClick(LatLng point) {
+                // Removes all the points from Google Map
+                googleMap.clear();
+                searchPlaceCompleted = false;
+                bottomButton.setText("EXPLORE AROUND ME");
+                // Removes all the points in the ArrayList
+                //markerPoints.clear();
+                //createDialog();
+            }
+        });
+
+        bottomButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
-                if(placeListDialog!=null)
+                /*if(placeListDialog!=null)
                 {
                     //placeListDialog.setContentView(placesListView);
-
                     placeListDialog.show();
+                }*/
+
+                if(searchPlaceCompleted) {
+                    createDialog();
                 }
             }
         });
@@ -248,11 +258,14 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         final AutoCompleteTextView textView = (AutoCompleteTextView)
                 findViewById(R.id.autocomplete_textview);
 
+        final RelativeLayout searchBar = (RelativeLayout) findViewById(R.id.search_bar_layout);
+
         Animation anim = AnimationUtils.loadAnimation(this, R.anim.fly_in_anim_from_top);
-        textView.startAnimation(anim);
+        searchBar.startAnimation(anim);
 
 
-        textView.setAdapter(new GooglePlacesAutocompleteAdapter(this,R.layout.support_simple_spinner_dropdown_item,latitude,longitude));
+        textView.setAdapter(new GooglePlacesAutocompleteAdapter(this,R.layout.autocomplete_row,latitude,longitude));
+
         textView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -264,8 +277,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                 return false;
                 }
             });
-
         //----------End of Auto complete implementation---------------
+
+        imgMyLocation.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                getMyLocation();
+            }
+        });
+
 
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
@@ -277,27 +298,37 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                     Animation anim1 = AnimationUtils.loadAnimation(context, R.anim.fly_out_anim_to_top);
                     Animation anim2 = AnimationUtils.loadAnimation(context, R.anim.fly_out_anim_to_bottom);
 
-                    textView.startAnimation(anim1);
-                    btnDraw.startAnimation(anim2);
-                    Log.e("AnimFlyOut","");
+                    searchBar.startAnimation(anim1);
+                    //btnDraw.startAnimation(anim2);
+                    hideSoftKeyboard(MapsActivity.this);
+                    //Log.e("AnimFlyOut","");
                     displayMenu = false;
-                    textView.setVisibility(View.GONE);
-                    btnDraw.setVisibility(View.GONE);
-                    showList.setVisibility(View.GONE);
-
+                    searchBar.setVisibility(View.GONE);
+                    //btnDraw.setVisibility(View.GONE);
+                    bottomButton.startAnimation(anim2);
+                    imgMyLocation.startAnimation(anim2);
+                    bottomButton.setVisibility(View.GONE);
+                    imgMyLocation.setVisibility(View.GONE);
+                    bottomBar.startAnimation(anim2);
+                    bottomBar.setVisibility(View.GONE);
                 }
                 else
                 {
                     Animation anim1 = AnimationUtils.loadAnimation(context, R.anim.fly_in_anim_from_top);
                     Animation anim2 = AnimationUtils.loadAnimation(context, R.anim.fly_in_anim_from_bottom);
-
-                    textView.startAnimation(anim1);
-                    btnDraw.startAnimation(anim2);
+                    searchBar.startAnimation(anim1);
+                    bottomBar.startAnimation(anim2);
+                    bottomButton.startAnimation(anim2);
+                    imgMyLocation.startAnimation(anim2);
+                    //btnDraw.startAnimation(anim2);
                     Log.e("AnimFlyIn","");
-                    textView.setVisibility(View.VISIBLE);
-                    btnDraw.setVisibility(View.VISIBLE);
-                    if(searchPlaceCompleted)
-                        showList.setVisibility(View.VISIBLE);
+                    searchBar.setVisibility(View.VISIBLE);
+                    bottomButton.setVisibility(View.VISIBLE);
+                    imgMyLocation.setVisibility(View.VISIBLE);
+                    //btnDraw.setVisibility(View.VISIBLE);
+                    /*if(searchPlaceCompleted)
+                        bottomButton.setVisibility(View.VISIBLE);*/
+                    bottomBar.setVisibility(View.VISIBLE);
                     displayMenu = true;
                 }
             }
@@ -305,7 +336,16 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
 
     }
 
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager)  activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
 
+    private void getMyLocation() {
+        LatLng latLng = new LatLng(latitude, longitude);
+        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 18);
+        googleMap.animateCamera(cameraUpdate);
+    }
     /*private boolean dismissDialog() {
         if (bottomDialog != null && bottomDialog.isShowing()) {
             bottomDialog.dismiss();
@@ -317,34 +357,19 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
 
 
 
+
+
     /*
-    Perform search query when user entered text
+    This happen when the keyboard back key is pressed
      */
-    private void performGeolocationSearch(LatLng location)
-    {
-        // build the query url
-        String userQuery = placeText.getText().toString();
-        GenerateGoogleMapApiUrl urlGenerator = new GenerateGoogleMapApiUrl();
-        StringBuilder googlePlacesUrl = urlGenerator.getGoogleMapPlacesQueryURL("",GenerateGoogleMapApiUrl.SEARCH_BY_GEOCOORDINATE,location.latitude,location.longitude);
-        Log.d("Google Query",googlePlacesUrl.toString());
-
-        // create the asynctask
-        GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
-        Object[] toPass = new Object[4];
-        toPass[0] = googleMap;
-        toPass[1] = googlePlacesUrl.toString();
-        toPass[2] = GooglePlacesReadTask.PLACE_QUERY;
-        toPass[3] = context;
-        googlePlacesReadTask.execute(toPass);
-    }
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             if(searchPlaceCompleted) {
                 googleMap.clear();
-                showList.setVisibility(View.GONE);
+                bottomButton.setText("EXPLORE AROUND ME");
                 searchPlaceCompleted = false;
+
                 return false;
             }
         }
@@ -359,6 +384,27 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
 
         GenerateGoogleMapApiUrl urlGenerator = new GenerateGoogleMapApiUrl();
         StringBuilder googlePlacesUrl = urlGenerator.getGoogleMapPlacesQueryURL(userQuery,GenerateGoogleMapApiUrl.TEXT_SEARCH,latitude,longitude);
+        Log.d("Google Query",googlePlacesUrl.toString());
+
+        // create the asynctask
+        GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
+        Object[] toPass = new Object[4];
+        toPass[0] = googleMap;
+        toPass[1] = googlePlacesUrl.toString();
+        toPass[2] = GooglePlacesReadTask.PLACE_QUERY;
+        toPass[3] = context;
+        googlePlacesReadTask.execute(toPass);
+    }
+
+    /*
+    Perform search query when user entered text
+     */
+    private void performGeolocationSearch(LatLng location)
+    {
+        // build the query url
+        String userQuery = placeText.getText().toString();
+        GenerateGoogleMapApiUrl urlGenerator = new GenerateGoogleMapApiUrl();
+        StringBuilder googlePlacesUrl = urlGenerator.getGoogleMapPlacesQueryURL("",GenerateGoogleMapApiUrl.SEARCH_BY_GEOCOORDINATE,location.latitude,location.longitude);
         Log.d("Google Query",googlePlacesUrl.toString());
 
         // create the asynctask
@@ -468,17 +514,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
     }
 
 
-    @Override
-    public void onTaskCompleted(Boolean response, BottomSheetDialog placeListDialog, View placesListView) {
-        if(response)
-        {
-            searchPlaceCompleted = true;
-            showList.setVisibility(View.VISIBLE);
-            //Toast.makeText(context, "Task Completed", Toast.LENGTH_LONG).show();
-            this.placeListDialog = placeListDialog;
-            this.placesListView = placesListView;
-        }
-    }
+
 
     protected void onStart() {
         mGoogleApiClient.connect();
@@ -513,6 +549,48 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 
     }
+
+    @Override
+    public void onTaskCompleted(Boolean response, List<Place> placeList) {
+        if(response)
+        {
+            searchPlaceCompleted = true;
+            bottomButton.setVisibility(View.VISIBLE);
+            bottomButton.setText("Show List");
+            mPlaceList = placeList;
+            //Toast.makeText(context, "Task Completed", Toast.LENGTH_LONG).show();
+            //this.placeListDialog = placeListDialog;
+            //this.placesListView = placesListView;
+            createDialog();
+        }
+    }
+
+
+
+    private void createDialog() {
+
+        GooglePlacesDisplayAdapter adapter = new GooglePlacesDisplayAdapter(mPlaceList);
+        adapter.setOnItemClickListener(new GooglePlacesDisplayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(GooglePlacesDisplayAdapter.ItemHolder item, int position) {
+                //dismissDialog();
+                Toast.makeText(context, mPlaceList.get(position).getName(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        View view = getLayoutInflater().inflate(R.layout.sheet_main, null);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+
+        placeListDialog = new BottomSheetDialog(this);
+        placeListDialog.setContentView(view);
+        placeListDialog.show();
+    }
+
 }
 
 

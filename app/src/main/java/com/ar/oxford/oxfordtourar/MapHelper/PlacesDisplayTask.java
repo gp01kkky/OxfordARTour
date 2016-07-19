@@ -3,6 +3,8 @@ package com.ar.oxford.oxfordtourar.MapHelper;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,6 +33,9 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
     GoogleMap googleMap;
     Context context;
     BottomSheetDialog placesListDialog;
+
+    BottomSheetBehavior behavior;
+
 
     private OnTaskCompleted taskCompleted;
 
@@ -73,8 +78,9 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
             markerOptions.icon(BitmapDescriptorFactory.fromResource(getIconFromTypes(type)));
             googleMap.addMarker(markerOptions);
         }
-        createDialog(list);
-
+        //createDialog(list);
+        taskCompleted.onTaskCompleted(true,list);
+        //createBottomSheet(list);
 
 
     }
@@ -117,10 +123,50 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
         recyclerView.setLayoutManager(new LinearLayoutManager(context));
         recyclerView.setAdapter(adapter);
 
-        placesListDialog = new BottomSheetDialog(context);
+        /*placesListDialog = new BottomSheetDialog(context);
         placesListDialog.setContentView(view);
         placesListDialog.show();
-        taskCompleted.onTaskCompleted(true, placesListDialog, view);
+        taskCompleted.onTaskCompleted(true, placesListDialog, view);*/
+    }
+
+    private void createBottomSheet(final List<Place> placeList)
+    {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        View view1 = inflater.inflate(R.layout.activity_maps, null);
+        View bottomSheet = view1.findViewById(R.id.bottom_sheet);
+
+        behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                // React to state change
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // React to dragging events
+            }
+        });
+
+        View view = inflater.inflate(R.layout.sheet_main, null);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+
+        GooglePlacesDisplayAdapter adapter = new GooglePlacesDisplayAdapter(placeList);
+        adapter.setOnItemClickListener(new GooglePlacesDisplayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(GooglePlacesDisplayAdapter.ItemHolder item, int position) {
+                //dismissDialog();
+                Toast.makeText(context, placeList.get(position).getName(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+        recyclerView.setAdapter(adapter);
+        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
 
     }
+
+
 }

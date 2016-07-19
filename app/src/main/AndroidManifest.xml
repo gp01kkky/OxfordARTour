@@ -66,8 +66,9 @@
             android:value="AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc" />
 
         <activity
-        android:name=".MapsActivity"
-        android:label="@string/title_activity_maps"></activity>
+            android:name=".MapsActivity"
+            android:windowSoftInputMode="adjustPan"
+            android:label="@string/title_activity_maps"></activity>
 
         <activity
             android:name=".ARViewActivity"

@@ -1,0 +1,74 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ar.oxford.oxfordtourar.MapsActivity">
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#002147"
+        android:layout_alignParentTop="true"
+        android:id="@+id/search_bar_layout">
+        <ImageView
+            android:id="@+id/search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/search_icon"
+            android:layout_centerVertical="true"
+            android:layout_alignRight="@+id/autocomplete_textview"
+            android:layout_alignEnd="@+id/autocomplete_textview" />
+
+        <AutoCompleteTextView
+            android:imeOptions="actionSearch"
+            android:inputType="text"
+            android:layout_width="fill_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_height="60dp"
+            android:hint="Find Places"
+            android:background="@android:color/transparent"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#FFFFFF"
+            android:id="@+id/autocomplete_textview" >
+            <requestFocus />
+        </AutoCompleteTextView>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/linearLayout"
+        android:layout_alignLeft="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout">
+
+        <ImageView
+            android:id="@+id/imgMyLocation"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_margin="10dp"
+            android:scaleType="fitXY"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/my_location_icon" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="#002147"
+        android:id="@+id/linearLayout">
+
+        <Button
+            android:id="@+id/show_list"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:text="Explore Around Me"
+            android:background="@android:color/transparent"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />
+    </LinearLayout>
+</RelativeLayout>

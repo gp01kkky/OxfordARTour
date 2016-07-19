@@ -1,69 +1,133 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="com.ar.oxford.oxfordtourar.MapsActivity">
 
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/googleMap"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        class="com.google.android.gms.maps.SupportMapFragment" />
-
-    <AutoCompleteTextView
-        android:imeOptions="actionSearch"
-        android:inputType="text"
+    <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:hint="Find Places"
-        android:background="#0000A0"
-        android:id="@+id/autocomplete_textview" >
-        <requestFocus />
-    </AutoCompleteTextView>
+        android:layout_height="fill_parent">
+
+
+        <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/googleMap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            class="com.google.android.gms.maps.SupportMapFragment" />
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#002147"
+            android:layout_alignParentTop="true"
+            android:id="@+id/search_bar_layout">
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/search_icon"
+                android:layout_centerVertical="true"
+                android:layout_alignRight="@+id/autocomplete_textview"
+                android:layout_alignEnd="@+id/autocomplete_textview" />
+
+            <AutoCompleteTextView
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:layout_width="fill_parent"
+                android:paddingLeft="10dp"
+                android:paddingRight="50dp"
+                android:layout_height="60dp"
+                android:hint="Find Places"
+                android:background="@android:color/transparent"
+                android:textColor="#FFFFFF"
+                android:textColorHint="#FFFFFF"
+                android:id="@+id/autocomplete_textview" >
+                <requestFocus />
+            </AutoCompleteTextView>
+        </RelativeLayout>
+
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_alignParentBottom="true"
+            android:layout_height="wrap_content"
+            android:id="@+id/bottom_bar_layout">
+
+
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/bottom_bar"
+            android:layout_alignLeft="@+id/bottom_bar"
+            android:layout_alignStart="@+id/bottom_bar">
+
+            <ImageView
+                android:id="@+id/imgMyLocation"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitXY"
+                android:layout_alignParentRight="true"
+                android:src="@drawable/my_location_icon" />
+
+        </RelativeLayout>
+
+        <!--<Button
+            android:id="@+id/btn_draw"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Draw"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true" />-->
+
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/transparent"
+            android:id="@+id/bottom_bar">
+
+            <Button
+                android:id="@+id/show_list"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:textColor="#FFFFFF"
+                android:text="Explore Around Me"
+                android:background="#002147"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true" />
+        </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
 
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:background="#fff"
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp" >
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_behavior="@string/bottom_sheet_behavior">
 
-        <ImageView
-            android:id="@+id/imgMyLocation"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/my_location_icon" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp" >
-
+        <android.support.v7.widget.RecyclerView
+            android:background="#fff"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp" />
 
     </LinearLayout>
 
-    <!--<Button
-        android:id="@+id/btn_draw"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Draw"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />-->
-
-    <Button
-        android:id="@+id/show_list"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="Show List"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
 
 
-
-</RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>
 
