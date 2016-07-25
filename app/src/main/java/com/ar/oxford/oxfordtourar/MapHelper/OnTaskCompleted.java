@@ -1,5 +1,7 @@
 package com.ar.oxford.oxfordtourar.MapHelper;
 
+import com.ar.oxford.oxfordtourar.model.Place;
+
 import java.util.List;
 
 /**

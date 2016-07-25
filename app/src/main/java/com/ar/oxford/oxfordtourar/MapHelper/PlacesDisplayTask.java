@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.ar.oxford.oxfordtourar.R;
+import com.ar.oxford.oxfordtourar.model.Place;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -61,7 +62,6 @@ public class PlacesDisplayTask extends AsyncTask<Object, Integer, List<Place>> {
     To add the marker for each places list returned by json
      */
     protected void onPostExecute(List<Place> list) {
-
 
         googleMap.clear(); // clear the map
         for (int i = 0; i < list.size(); i++) {

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.map:
-                intent = new Intent(getApplicationContext(), MapsActivity.class);
+                intent = new Intent(getApplicationContext(), MapsActivityNew2.class);
                 startActivity(intent);
                 break;
             case R.id.suggested_tour:

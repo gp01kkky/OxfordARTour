@@ -16,6 +16,7 @@ public class GenerateGoogleMapApiUrl {
     public static final int SEARCH_BY_TYPE = 2;
     public static final int SEARCH_BY_GEOCOORDINATE = 3;
     public static final int AUTOCOMPLETE = 4;
+    public static final int PLACE_DETAIL = 5;
 
     private static final String GOOGLE_API_KEY = "AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
     private int PROXIMITY_RADIUS = 5000; // in metres
@@ -61,6 +62,12 @@ public class GenerateGoogleMapApiUrl {
                 googlePlacesUrl.append("&location=" + latitude +","+longitude);
                 googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
                 googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
+                break;
+            case PLACE_DETAIL:
+                googlePlacesUrl.append("place/details/json?");
+                googlePlacesUrl.append("placeid=" + query);
+                googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
+                break;
             default:
                 googlePlacesUrl.append("nearbysearch/json?");
                 googlePlacesUrl.append("&sensor=true");

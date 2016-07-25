@@ -45,9 +45,11 @@ public class GooglePlacesAutocompleteAdapter extends ArrayAdapter implements Fil
         return result.size();
     }
     @Override
-    public String getItem(int index){
-        return result.get(index).getPlaceDesc();
+    public PlaceAutoComplete getItem(int index){
+        return result.get(index);
     }
+
+
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

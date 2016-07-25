@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
+    android:id="@+id/coordinatorlayout"
     tools:context="com.ar.oxford.oxfordtourar.MapsActivity">
 
     <RelativeLayout
@@ -23,16 +24,7 @@
             android:background="#002147"
             android:layout_alignParentTop="true"
             android:id="@+id/search_bar_layout">
-            <ImageView
-                android:id="@+id/search"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_margin="10dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/search_icon"
-                android:layout_centerVertical="true"
-                android:layout_alignRight="@+id/autocomplete_textview"
-                android:layout_alignEnd="@+id/autocomplete_textview" />
+
 
             <AutoCompleteTextView
                 android:imeOptions="actionSearch"
@@ -48,6 +40,16 @@
                 android:id="@+id/autocomplete_textview" >
                 <requestFocus />
             </AutoCompleteTextView>
+            <ImageView
+                android:id="@+id/search"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/search_icon"
+                android:layout_centerVertical="true"
+                android:layout_alignRight="@+id/autocomplete_textview"
+                android:layout_alignEnd="@+id/autocomplete_textview" />
         </RelativeLayout>
 
 
@@ -62,6 +64,7 @@
         <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
             android:layout_above="@+id/bottom_bar"
             android:layout_alignLeft="@+id/bottom_bar"
             android:layout_alignStart="@+id/bottom_bar">
@@ -70,10 +73,12 @@
                 android:id="@+id/imgMyLocation"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
-                android:layout_margin="10dp"
                 android:scaleType="fitXY"
                 android:layout_alignParentRight="true"
-                android:src="@drawable/my_location_icon" />
+                android:src="@drawable/my_location_icon"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="10dp" />
 
         </RelativeLayout>
 
@@ -108,24 +113,110 @@
 
 
     <LinearLayout
-        android:background="#fff"
+        android:background="@android:color/transparent"
         android:id="@+id/bottom_sheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_behavior="@string/bottom_sheet_behavior">
-
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="80dp">
+        <TextView
+            android:background="#002147"
+            android:id="@+id/txtHeader"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="List of Places"
+            android:layout_marginTop="18dp"/>
 
         <android.support.v7.widget.RecyclerView
             android:background="#fff"
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="0dp" />
 
     </LinearLayout>
+
+
+    <!-- The 3 layer bottomsheet view -->
+
+    <!--<android.support.design.widget.AppBarLayout
+        android:id="@+id/appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.FirstAppBarLayoutBehavior">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
+    </android.support.design.widget.AppBarLayout>-->
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/expanded_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:tag="modal-appbar"
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.SecondAppBarLayoutBehavior">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/expanded_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title=""
+            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"/>
+
+    </android.support.design.widget.AppBarLayout>
+
+
+
+    <ImageView
+        android:id="@+id/bottomsheet_backdrop2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/cheese_3"
+        app:behavior_backdrop_peekHeight="80dp"
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.BackdropBottomSheetBehavior"/>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:behavior_peekHeight="80dp"
+        android:id="@+id/bottom_sheet_place_detail"
+
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.BottomSheetBehaviorGoogleMapsLike"
+        app:anchorPoint="200dp">
+
+        <include
+            layout="@layout/bottom_sheet_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </android.support.v4.widget.NestedScrollView>
+
+
+    <!--<android.support.design.widget.FloatingActionButton
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/floating_icon"
+        android:visibility="gone"
+        app:layout_anchor="@id/bottom_sheet_place_detail"
+        app:layout_anchorGravity="top|right|end"
+        android:src="@drawable/ic_action_go"
+        android:layout_margin="@dimen/fab_margin"
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.ScrollAwareFABBehavior"
+        android:clickable="true"/>-->
 
 
 

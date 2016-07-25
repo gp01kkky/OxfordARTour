@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">OxfordARTour</string>
+    <string name="key_binding_default_toolbar_name">Modal-Toolbar-Title</string>
+
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

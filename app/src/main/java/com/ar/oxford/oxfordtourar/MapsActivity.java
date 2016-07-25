@@ -2,6 +2,7 @@ package com.ar.oxford.oxfordtourar;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -12,11 +13,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -24,6 +28,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -32,12 +37,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.ar.oxford.oxfordtourar.MapHelper.GenerateGoogleMapApiUrl;
 import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesAutocompleteAdapter;
 import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesDisplayAdapter;
+import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesDisplayAdapterCustom;
 import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesReadTask;
 import com.ar.oxford.oxfordtourar.MapHelper.OnTaskCompleted;
-import com.ar.oxford.oxfordtourar.MapHelper.Place;
+import com.ar.oxford.oxfordtourar.Util.AppController;
+import com.ar.oxford.oxfordtourar.model.Place;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -47,8 +60,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,6 +81,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
     private UiSettings googleMapUiSettings;
     private GenerateGoogleMapApiUrl generateGoogleAPIHelper;
     GoogleApiClient mGoogleApiClient = null;
+    AutoCompleteTextView textView;
+    BottomSheetBehavior behavior;
+    String TAG = MapsActivity.class.getSimpleName();
 
     EditText placeText;
     double latitude = 0;
@@ -233,6 +255,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                 googleMap.clear();
                 searchPlaceCompleted = false;
                 bottomButton.setText("EXPLORE AROUND ME");
+
                 // Removes all the points in the ArrayList
                 //markerPoints.clear();
                 //createDialog();
@@ -249,14 +272,26 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                 }*/
 
                 if(searchPlaceCompleted) {
-                    createDialog();
+                    if(mPlaceList.size()>0) {
+                        behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                    }
+
+                    //createDialog();
                 }
             }
         });
         //-----------Auto Complete Code----------------
 
-        final AutoCompleteTextView textView = (AutoCompleteTextView)
+        textView = (AutoCompleteTextView)
                 findViewById(R.id.autocomplete_textview);
+
+        final ImageView autoCompleteImage = (ImageView) findViewById(R.id.search);
+        autoCompleteImage.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                textView.setText("");
+            }
+        });
 
         final RelativeLayout searchBar = (RelativeLayout) findViewById(R.id.search_bar_layout);
 
@@ -264,14 +299,47 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         searchBar.startAnimation(anim);
 
 
+
         textView.setAdapter(new GooglePlacesAutocompleteAdapter(this,R.layout.autocomplete_row,latitude,longitude));
+
+        textView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String selected = (String) parent.getItemAtPosition(position);
+                performPlaceSearch(selected);
+            }
+        });
+        // for creating cross button in search bar
+        textView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length()>0)
+                {
+                    autoCompleteImage.setImageResource(R.drawable.cross_icon);
+                }
+                else
+                {
+                    autoCompleteImage.setImageResource(R.drawable.search_icon);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         textView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                    // if user click enter search
-                    performNearbyTextSearch(textView.getText().toString());
+                   performPlaceSearch(textView.getText().toString());
                     return true;
                 }
                 return false;
@@ -279,6 +347,7 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
             });
         //----------End of Auto complete implementation---------------
 
+        // location button
         imgMyLocation.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -286,7 +355,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                 getMyLocation();
             }
         });
-
 
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener(){
@@ -311,6 +379,10 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                     imgMyLocation.setVisibility(View.GONE);
                     bottomBar.startAnimation(anim2);
                     bottomBar.setVisibility(View.GONE);
+                    if(searchPlaceCompleted)
+                    {
+                        behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                    }
                 }
                 else
                 {
@@ -346,16 +418,6 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 18);
         googleMap.animateCamera(cameraUpdate);
     }
-    /*private boolean dismissDialog() {
-        if (bottomDialog != null && bottomDialog.isShowing()) {
-            bottomDialog.dismiss();
-            return true;
-        }
-
-        return false;
-    }
-
-
 
 
 
@@ -365,11 +427,11 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            if(searchPlaceCompleted) {
+            if(searchPlaceCompleted){
                 googleMap.clear();
                 bottomButton.setText("EXPLORE AROUND ME");
                 searchPlaceCompleted = false;
-
+                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 return false;
             }
         }
@@ -394,6 +456,186 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         toPass[2] = GooglePlacesReadTask.PLACE_QUERY;
         toPass[3] = context;
         googlePlacesReadTask.execute(toPass);
+    }
+
+
+    private void performPlaceSearch(String userQuery)
+    {
+        GenerateGoogleMapApiUrl urlGenerator = new GenerateGoogleMapApiUrl();
+        StringBuilder googlePlacesUrl = urlGenerator.getGoogleMapPlacesQueryURL(userQuery,GenerateGoogleMapApiUrl.TEXT_SEARCH,latitude,longitude);
+        Log.d("Google Query",googlePlacesUrl.toString());
+
+        final List<Place> newPlacesList = new ArrayList<Place>();
+        // Creating volley request obj
+        JsonObjectRequest movieReq = new JsonObjectRequest(Request.Method.GET,googlePlacesUrl.toString(),null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject result) {
+                        Log.d("JSON Error", result.toString());
+                        hidePDialog();
+                        JSONArray response = null;
+                        try {
+                           response = result.getJSONArray("results");
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        // Parsing json
+                        for (int i = 0; i < response.length(); i++) {
+                            try {
+
+                                JSONObject obj = response.getJSONObject(i);
+                                Place newPlace = new Place();
+                                if (!obj.isNull("name")) {
+                                    newPlace.setName(obj.getString("name"));
+                                }
+                                if(!obj.isNull("rating"))
+                                {
+                                    newPlace.setRating(Float.parseFloat(obj.getString("rating")));
+                                }
+                                newPlace.setLat(obj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
+                                newPlace.setLng(obj.getJSONObject("geometry").getJSONObject("location").getString("lng"));
+                                JSONArray types = obj.getJSONArray("types");
+                                newPlace.setType(types.get(0).toString());
+                                if(!obj.isNull("opening_hours"))
+                                {
+                                    newPlace.setOpen(obj.getJSONObject("opening_hours").getBoolean("open_now"));
+                                }
+
+                                if(!obj.isNull("photos"))
+                                    newPlace.setPhoto_reference(obj.getJSONArray("photos").getJSONObject(0).getString("photo_reference"));
+
+                                // adding movie to movies array
+                                newPlacesList.add(newPlace);
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        // notifying list adapter about data changes
+                        // so that it renders the list view with updated data
+
+                        searchPlaceCompleted = true;
+                        bottomButton.setVisibility(View.VISIBLE);
+                        if(newPlacesList.size()<1)
+                        {
+                            bottomButton.setText("No Places Found");
+                        }
+                        else
+                        {
+                            bottomButton.setText("Show List");
+                        }
+                        mPlaceList = newPlacesList;
+                        //Toast.makeText(context, "Task Completed", Toast.LENGTH_LONG).show();
+                        //this.placeListDialog = placeListDialog;
+                        //this.placesListView = placesListView;
+                        //createDialog();
+                        hideSoftKeyboard(MapsActivity.this);
+                        textView.dismissDropDown();
+                        plotGoogleMap(newPlacesList);
+                        zoomToLocationSearchResult(newPlacesList);
+                        createBottomSheetTest(newPlacesList);
+
+                        if(newPlacesList.size()>0)
+                        {
+                            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                            //behavior.setPeekHeight(300);
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: " + error.getMessage());
+                hidePDialog();
+
+            }
+        });
+        // Adding request to request queue
+        AppController.getInstance().addToRequestQueue(movieReq);
+    }
+
+    private void plotGoogleMap(List<Place> list)
+    {
+        googleMap.clear(); // clear the map
+        for (int i = 0; i < list.size(); i++) {
+            MarkerOptions markerOptions = new MarkerOptions();
+            Place googlePlace = list.get(i);
+            String placeName = googlePlace.getName();
+            double lat = Double.parseDouble(googlePlace.getLat());
+            double lng = Double.parseDouble(googlePlace.getLng());
+            String type = googlePlace.getType();
+            //Bitmap bmImg = getBitmapFromURL(icon);
+            LatLng latLng = new LatLng(lat, lng);
+            markerOptions.position(latLng);
+            markerOptions.title(placeName);
+            markerOptions.icon(BitmapDescriptorFactory.fromResource(getIconFromTypes(type)));
+            googleMap.addMarker(markerOptions);
+        }
+    }
+    public int getIconFromTypes(String type)
+    {
+        int resource_id;
+        switch (type)
+        {
+            case "restaurant":
+                resource_id = R.drawable.places_restaurant;
+                break;
+            default:
+                resource_id = R.drawable.places_default;
+                break;
+        }
+        return resource_id;
+    }
+
+    private void createBottomSheetTest(final List<Place> mPlaceList)
+    {
+        View bottomSheet = findViewById(R.id.bottom_sheet);
+        behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull final View bottomSheet, int newState) {
+                // React to state change
+                bottomSheet.requestLayout();
+                bottomSheet.invalidate();
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // React to dragging events
+            }
+        });
+        GooglePlacesDisplayAdapterCustom adapter = new GooglePlacesDisplayAdapterCustom(mPlaceList);
+        adapter.setOnItemClickListener(new GooglePlacesDisplayAdapterCustom.OnItemClickListener() {
+            @Override
+            public void onItemClick(GooglePlacesDisplayAdapterCustom.ItemHolder item, int position) {
+                //dismissDialog();
+                Toast.makeText(context, mPlaceList.get(position).getName(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+    }
+
+    private ProgressDialog pDialog;
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        hidePDialog();
+    }
+
+    private void hidePDialog() {
+        if (pDialog != null) {
+            pDialog.dismiss();
+            pDialog = null;
+        }
     }
 
     /*
@@ -556,16 +798,64 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         {
             searchPlaceCompleted = true;
             bottomButton.setVisibility(View.VISIBLE);
-            bottomButton.setText("Show List");
+            if(placeList.size()<1)
+            {
+                bottomButton.setText("No Places Found");
+            }
+            else
+            {
+                bottomButton.setText("Show List");
+            }
             mPlaceList = placeList;
             //Toast.makeText(context, "Task Completed", Toast.LENGTH_LONG).show();
             //this.placeListDialog = placeListDialog;
             //this.placesListView = placesListView;
-            createDialog();
+            //createDialog();
+            hideSoftKeyboard(MapsActivity.this);
+            textView.dismissDropDown();
+            createBottomSheet();
+            zoomToLocationSearchResult(placeList);
+            if(mPlaceList.size()>0)
+            {
+                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                //behavior.setPeekHeight(300);
+            }
         }
     }
 
 
+    private void createBottomSheet()
+    {
+        View bottomSheet = findViewById(R.id.bottom_sheet);
+        behavior = BottomSheetBehavior.from(bottomSheet);
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull final View bottomSheet, int newState) {
+                // React to state change
+                    bottomSheet.requestLayout();
+                    bottomSheet.invalidate();
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                // React to dragging events
+            }
+        });
+        GooglePlacesDisplayAdapter adapter = new GooglePlacesDisplayAdapter(mPlaceList);
+        adapter.setOnItemClickListener(new GooglePlacesDisplayAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(GooglePlacesDisplayAdapter.ItemHolder item, int position) {
+                //dismissDialog();
+                Toast.makeText(context, mPlaceList.get(position).getName(), Toast.LENGTH_LONG).show();
+
+            }
+        });
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+    }
 
     private void createDialog() {
 
@@ -589,6 +879,22 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
         placeListDialog = new BottomSheetDialog(this);
         placeListDialog.setContentView(view);
         placeListDialog.show();
+    }
+
+    private void zoomToLocationSearchResult(List<Place> places) {
+
+        if(places.size()>1)
+        {
+            LatLng latLng = new LatLng(Double.parseDouble(places.get(0).getLat()),Double.parseDouble(places.get(0).getLng()));
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 12);
+            googleMap.animateCamera(cameraUpdate);
+        }
+        else if (places.size()==1)
+        {
+            LatLng latLng = new LatLng(Double.parseDouble(places.get(0).getLat()),Double.parseDouble(places.get(0).getLng()));
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(latLng, 18);
+            googleMap.animateCamera(cameraUpdate);
+        }
     }
 
 }

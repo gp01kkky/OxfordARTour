@@ -33,6 +33,7 @@
         android:required="true" />
 
     <application
+        android:name="com.ar.oxford.oxfordtourar.Util.AppController"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -46,6 +47,7 @@
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -66,9 +68,11 @@
             android:value="AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc" />
 
         <activity
-            android:name=".MapsActivity"
+            android:name=".MapsActivityNew2"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan"
-            android:label="@string/title_activity_maps"></activity>
+            android:label="@string/title_activity_maps"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <activity
             android:name=".ARViewActivity"

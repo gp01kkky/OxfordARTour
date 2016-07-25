@@ -25,4 +25,10 @@ public class PlaceAutoComplete {
         place_id = placeID;
     }
 
+    @Override
+    public String toString()
+    {
+        return getPlaceDesc();
+    }
+
 }
