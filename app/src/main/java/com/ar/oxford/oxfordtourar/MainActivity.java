@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.route_planner:
-                intent = new Intent(getApplicationContext(), ARGoogleMapActivity.class);
+                intent = new Intent(getApplicationContext(), RoutePlannerActivity.class);
                 startActivity(intent);
                 break;
             case R.id.restaurant:

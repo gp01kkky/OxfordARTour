@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Created by Kelvin Khoo on 29/06/2016.
  */
-public class GooglePlacesDisplayAdapterCustom extends RecyclerView.Adapter<GooglePlacesDisplayAdapterCustom.ItemHolder>{
+public class  GooglePlacesDisplayAdapterCustom extends RecyclerView.Adapter<GooglePlacesDisplayAdapterCustom.ItemHolder>{
 
     private List<Place> list;
     private OnItemClickListener onItemClickListener;
