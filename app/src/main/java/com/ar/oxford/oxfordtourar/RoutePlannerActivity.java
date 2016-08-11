@@ -2,6 +2,7 @@ package com.ar.oxford.oxfordtourar;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -50,11 +51,17 @@ public class RoutePlannerActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 String tripName = String.valueOf(taskEditText.getText());
-                                Trip newTrip = new Trip();
-                                newTrip.setTripName(tripName);
-                                db.createTrip(newTrip);
-                                Log.d(TAG, "Trip to add: " + tripName);
-                                updateUI();
+                                Boolean wantToCloseDialog = (tripName.toString().trim().isEmpty());
+                                if(!wantToCloseDialog) {
+                                    Trip newTrip = new Trip();
+                                    newTrip.setTripName(tripName);
+                                    db.createTrip(newTrip);
+                                    updateUI();
+                                    Log.d(TAG, "Trip to add: " + tripName);
+                                }
+                                else {
+
+                                }
                             }
                         })
                         .setNegativeButton("Cancel", null)
@@ -78,8 +85,12 @@ public class RoutePlannerActivity extends AppCompatActivity {
         adapter = new CustomGridAdapter2(tripList);
         adapter.setOnItemClickListener(new CustomGridAdapter2.OnItemClickListener() {
             @Override
+            // when clicked on a trip we go and see how many places in the trip
             public void onItemClick(CustomGridAdapter2.ItemHolder item, int position) {
                 Toast.makeText(RoutePlannerActivity.this, tripList.get(position).getTripName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getApplicationContext(),PlacesInTrip.class);
+                intent.putExtra("trip_id",tripList.get(position).getId());
+                startActivity(intent);
             }
         });
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview_grid);

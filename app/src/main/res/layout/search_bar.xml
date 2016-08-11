@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <AutoCompleteTextView
+        android:imeOptions="actionSearch"
+        android:inputType="text"
+        android:layout_width="fill_parent"
+        android:paddingLeft="10dp"
+        android:paddingRight="50dp"
+        android:layout_height="60dp"
+        android:hint="Find Places"
+        android:background="@android:color/transparent"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#FFFFFF"
+        android:id="@+id/autocomplete_textview" >
+        <requestFocus />
+    </AutoCompleteTextView>
+
+</LinearLayout>

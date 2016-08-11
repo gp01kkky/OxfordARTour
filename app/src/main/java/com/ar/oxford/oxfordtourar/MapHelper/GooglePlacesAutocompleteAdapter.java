@@ -5,7 +5,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -128,6 +127,14 @@ public class GooglePlacesAutocompleteAdapter extends ArrayAdapter implements Fil
 
     private static double latitude =0;
     private static double longitude = 0;
+
+    public static void setLatitude(double latitude) {
+        GooglePlacesAutocompleteAdapter.latitude = latitude;
+    }
+
+    public static void setLongitude(double longitude) {
+        GooglePlacesAutocompleteAdapter.longitude = longitude;
+    }
 
     public static ArrayList<PlaceAutoComplete> autocomplete(String input) {
         ArrayList<PlaceAutoComplete> resultList = null;

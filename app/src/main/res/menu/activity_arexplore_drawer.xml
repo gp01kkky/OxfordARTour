@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:title="Rating">
+        <menu>
+            <group android:checkableBehavior="single">
+            <item
+                android:id="@+id/rating_any"
+                android:title="Any" />
+            <item
+                android:id="@+id/rating_2"
+                android:title="2.0+" />
+            <item
+                android:id="@+id/rating_3"
+                android:title="3.0+" />
+            <item
+                android:id="@+id/rating_4"
+                android:title="4.0+" />
+            </group>
+        </menu>
+    </item>
+
+    <group android:checkableBehavior="single">
+    <item
+        android:id="@+id/open_now"
+        android:title="Open Now" />
+    </group>
+
+    <item android:title="Features">
+        <menu>
+                <item
+                    android:id="@+id/nav_route_planner"
+                    android:icon="@drawable/map_icon"
+                    android:title="Route Planner" />
+        </menu>
+    </item>
+
+</menu>

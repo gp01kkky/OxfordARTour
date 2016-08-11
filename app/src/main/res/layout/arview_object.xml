@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ar_object_layout"
+    android:layout_width="160dp"
+    android:layout_height="wrap_content"
+    android:alpha="0.6"
+    android:background="#967F7F7F"
+    android:orientation="vertical"
+    android:padding="8dp" >
+
+
+
+    <!-- Place Name -->
+    <TextView
+        android:id="@+id/place_name"
+        android:textColor="#FFFFFF"
+        android:background="@android:color/transparent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Radcliff Camera"
+        android:textSize="17dp"
+        android:textStyle="bold"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:singleLine="true"/>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:background="#c0c0c0"/>
+
+    <!-- Distance -->
+    <TextView
+        android:id="@+id/distance"
+        android:textColor="#70AD47"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="0 miles"
+        android:textSize="17dp"
+        android:background="@android:color/transparent"
+        android:textStyle="bold" />
+
+    <!-- type -->
+    <TextView
+        android:id="@+id/type"
+        android:textColor="#FFFFFF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:text="Attraction"
+        android:textSize="17dp"
+        android:background="@android:color/transparent"
+        android:textStyle="bold" />
+
+    <RatingBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:rating="5.0"
+        style="?android:attr/ratingBarStyleSmall"
+        android:id="@+id/ratingBar"
+        android:background="@android:color/transparent"
+        android:layout_marginLeft="7dp"/>
+
+
+
+
+</LinearLayout>

@@ -82,6 +82,8 @@ public class  GooglePlacesDisplayAdapterCustom extends RecyclerView.Adapter<Goog
             title.setText(item.getName());
             rating.setText(Double.toString(item.getRating()));
             address.setText(item.getName());
+            int distanceFromUser = (int)item.getDistance();
+            distance.setText(Integer.toString(distanceFromUser));
             String imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=" + item.getPhoto_reference()+"&key=AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
             thumbNail.setImageUrl(imageUrl,imageLoader);
         }

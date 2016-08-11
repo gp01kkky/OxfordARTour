@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.ar.oxford.oxfordtourar.PlacesInTrip"
+    tools:showIn="@layout/activity_places_in_trip">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:id="@+id/places_in_trip_image"
+                    android:src="@drawable/oxford_image"
+                    android:scaleType="fitXY"
+                    android:textSize="18sp"/>
+                <android.support.v7.widget.RecyclerView
+                    android:background="#fff"
+                    android:id="@+id/recyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/places_in_trip_image"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+        </LinearLayout>
+
+</android.support.v4.widget.NestedScrollView>
+
+
+
+

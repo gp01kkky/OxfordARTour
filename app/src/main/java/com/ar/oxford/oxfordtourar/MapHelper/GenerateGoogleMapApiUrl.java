@@ -19,6 +19,7 @@ public class GenerateGoogleMapApiUrl {
     public static final int PLACE_DETAIL = 5;
 
     private static final String GOOGLE_API_KEY = "AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
+    private int proximityRadius = 300; // in metres
     private int PROXIMITY_RADIUS = 5000; // in metres
 
     public StringBuilder getGoogleMapPlacesQueryURL(String userQuery, int type, double latitude, double longitude)
@@ -32,7 +33,7 @@ public class GenerateGoogleMapApiUrl {
                 googlePlacesUrl.append("place/nearbysearch/json?");
                 googlePlacesUrl.append("sensor=true");
                 googlePlacesUrl.append("&location=" + latitude + "," + longitude);
-                googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
+                googlePlacesUrl.append("&radius=" + proximityRadius);
                 googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
                 break;
             case TEXT_SEARCH:
@@ -40,7 +41,7 @@ public class GenerateGoogleMapApiUrl {
                 googlePlacesUrl.append("query=" + query);
                 googlePlacesUrl.append("&sensor=true");
                 googlePlacesUrl.append("&location=" + latitude + "," + longitude);
-                googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
+                //googlePlacesUrl.append("&radius=" + proximityRadius);
                 googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
                 break;
             case SEARCH_BY_TYPE:
@@ -111,5 +112,9 @@ public class GenerateGoogleMapApiUrl {
         Log.d("Direction url: ",url);
 
         return url;
+    }
+
+    public void setProximityRadius(int proximityRadius) {
+        this.proximityRadius = proximityRadius;
     }
 }

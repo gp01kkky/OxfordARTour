@@ -25,7 +25,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String LOG = "DatabaseHelper";
 
     // database version
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
     // database name
     private static final String DATABASE_NAME = "TripManager";
 
@@ -68,9 +68,10 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     // PLACE Table create statement
     private static final String CREATE_PLACE_TABLE = "CREATE TABLE "
-            + TABLE_PLACE + "(" + ID + " INTEGER PRIMARY KEY,"
+            + TABLE_PLACE + "("
+            + ID + " INTEGER PRIMARY KEY,"
             + PLACE_ID + " TEXT,"
-            + PLACE_TYPE + " TEXT"
+            + PLACE_TYPE + " TEXT,"
             + LATITUDE + " TEXT,"
             + LONGITUDE + " TEXT,"
             + PLACE_NAME + " TEXT,"
@@ -114,29 +115,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    /**
-     * Create a place in SQL Database
-     * @param place
-     * @return
-     */
-    public long createPlace(Place place)
-    {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(PLACE_ID,place.getPlace_id());
-        contentValues.put(PLACE_TYPE,place.getType());
-        contentValues.put(LATITUDE,place.getLat());
-        contentValues.put(LONGITUDE,place.getLng());
-        contentValues.put(PLACE_NAME,place.getName());
-        contentValues.put(PHOTO_REFERENCE,place.getPhoto_reference());
-        contentValues.put(PRICE_LEVEL,place.getPrice_level());
-        contentValues.put(RATING,place.getRating());
-        contentValues.put(PHONE_NUMBER,place.getPhone_number());
-        contentValues.put(ADDRESS,place.getAddress());
-        contentValues.put(WEBSITE,place.getWebsite());
-        long id = db.insert(TABLE_PLACE,null,contentValues);
-        return id;
-    }
+
 
     /**
      * get a single place by sqlID
@@ -223,7 +202,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 place.setPhone_number(result.getString(result.getColumnIndex(PHONE_NUMBER)));
                 place.setAddress(result.getString(result.getColumnIndex(ADDRESS)));
                 place.setWebsite(result.getString(result.getColumnIndex(WEBSITE)));
-
                 placeList.add(place);
             }while (result.moveToNext());
         }
@@ -243,10 +221,61 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(TRIP_NAME,trip.getTripName());
         values.put(CREATED_AT,getDateTime());
-
         long id = db.insert(TABLE_TRIP,null,values);
         return id;
     }
+
+    /**
+     * add a place to a trip
+     * @param trip
+     * @param place
+     */
+    public void addPlaceToTrip(Trip trip, Place place)
+    {
+        long place_keyID = createPlace(place);
+        createTripPlace(trip.getId(),place_keyID);
+    }
+
+    /**
+     * Create a place in SQL Database
+     * @param place
+     * @return
+     */
+    public long createPlace(Place place)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PLACE_ID,place.getPlace_id());
+        contentValues.put(PLACE_TYPE,place.getType());
+        contentValues.put(LATITUDE,place.getLat());
+        contentValues.put(LONGITUDE,place.getLng());
+        contentValues.put(PLACE_NAME,place.getName());
+        contentValues.put(PHOTO_REFERENCE,place.getPhoto_reference());
+        contentValues.put(PRICE_LEVEL,place.getPrice_level());
+        contentValues.put(RATING,place.getRating());
+        contentValues.put(PHONE_NUMBER,place.getPhone_number());
+        contentValues.put(ADDRESS,place.getAddress());
+        contentValues.put(WEBSITE,place.getWebsite());
+        long id = db.insert(TABLE_PLACE,null,contentValues);
+        return id;
+    }
+
+    /**
+     * create a place in a trip
+     * @param trip_id
+     * @param place_keyid
+     * @return
+     */
+    public long createTripPlace(long trip_id, long place_keyid)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(KEY_TRIP_ID, trip_id);
+        contentValues.put(KEY_PLACE_ID,place_keyid);
+        long id = db.insert(TABLE_TRIP_PLACE,null,contentValues);
+        return id;
+    }
+
 
     // return all the trip in the database
     public List<Trip> getAllTrip(){
@@ -260,6 +289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 Trip trip = new Trip();
                 trip.setId(result.getInt(result.getColumnIndex(ID)));
                 trip.setTripName(result.getString(result.getColumnIndex(TRIP_NAME)));
+                trip.setCreated_at(result.getString(result.getColumnIndex(CREATED_AT)));
                 tripList.add(trip);
             }while(result.moveToNext());
         }

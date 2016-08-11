@@ -61,61 +61,57 @@
             android:id="@+id/bottom_bar_layout">
 
 
-        <RelativeLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:layout_above="@+id/bottom_bar"
-            android:layout_alignLeft="@+id/bottom_bar"
-            android:layout_alignStart="@+id/bottom_bar">
-
-            <ImageView
-                android:id="@+id/imgMyLocation"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:scaleType="fitXY"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:src="@drawable/my_location_icon"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp" />
-
-        </RelativeLayout>
-
-        <!--<Button
-            android:id="@+id/btn_draw"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Draw"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true" />-->
-
-
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/transparent"
-            android:id="@+id/bottom_bar">
-
-            <Button
-                android:id="@+id/show_list"
+            <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:textColor="#FFFFFF"
-                android:text="Explore Around Me"
-                android:background="#002147"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="30dp"
+                android:layout_above="@+id/bottom_bar"
+                android:layout_alignLeft="@+id/bottom_bar"
+                android:layout_alignStart="@+id/bottom_bar">
+
+                <ImageView
+                    android:id="@+id/imgMyLocation"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:scaleType="fitXY"
+                    android:layout_alignParentRight="true"
+                    android:src="@drawable/my_location_icon"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp" />
+
+            </RelativeLayout>
+
+            <!--<Button
+                android:id="@+id/btn_draw"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="Draw"
                 android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true" />
-        </LinearLayout>
+                android:layout_centerHorizontal="true" />-->
+
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@android:color/transparent"
+                android:id="@+id/bottom_bar">
+
+                <Button
+                    android:id="@+id/get_route"
+                    android:layout_width="fill_parent"
+                    android:layout_height="40dp"
+                    android:textColor="#FFFFFF"
+                    android:text="Get Route"
+                    android:background="#002147"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true" />
+            </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
 
 
-<!--
-    list of places bottomsheet view
--->
     <LinearLayout
         android:background="@android:color/transparent"
         android:id="@+id/bottom_sheet"
@@ -180,6 +176,7 @@
             app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"/>
 
     </android.support.design.widget.AppBarLayout>
+
 
 
     <ImageView

@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.ar_explore_mode:
-                intent = new Intent(getApplicationContext(), ARCamera.class);
+                intent = new Intent(getApplicationContext(), ARExploreActivity.class);
                 startActivity(intent);
                 break;
             case R.id.route_planner:
@@ -77,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.nightlife:
-                /*intent = new Intent(getApplicationContext(), SettingsActivity.class);
-                startActivity(intent);*/
+                intent = new Intent(getApplicationContext(), SimpleCameraWithRadarActivity.class);
+                startActivity(intent);
                 break;
             case R.id.shopping:
                 /*intent = new Intent(getApplicationContext(), SettingsActivity.class);

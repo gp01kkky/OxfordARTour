@@ -109,4 +109,10 @@
     <string name="copy">Copy</string>
     <string name="print">Print</string>
     <string name="title_activity_route_planner">RoutePlannerActivity</string>
+    <string name="title_activity_places_in_trip">PlacesInTrip</string>
+    <string name="title_activity_display_trip_places">DisplayPlaces</string>
+    <string name="title_activity_arexplore">ARExploreActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

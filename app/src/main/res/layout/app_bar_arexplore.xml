@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/coordinatorlayout"
+    tools:context="com.ar.oxford.oxfordtourar.ARExploreActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        <LinearLayout
+            android:id="@+id/top_bar"
+            android:background="#000000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.ar.oxford.oxfordtourar.Util.SquareLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/image_attraction"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/restaurant_icn" />
+                </com.ar.oxford.oxfordtourar.Util.SquareLayout>
+                <TextView
+                    android:id="@+id/attraction_tile_string"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Restaurant"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.ar.oxford.oxfordtourar.Util.SquareLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/image_attraction"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/bar_icn" />
+                </com.ar.oxford.oxfordtourar.Util.SquareLayout>
+                <TextView
+                    android:id="@+id/attraction_tile_string"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Bar"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/cafe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:gravity="center"
+                android:onClick="loadTopBar"
+                android:orientation="vertical">
+
+                <com.ar.oxford.oxfordtourar.Util.SquareLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/image_attraction"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/cafe_icn" />
+                </com.ar.oxford.oxfordtourar.Util.SquareLayout>
+                <TextView
+                    android:id="@+id/attraction_tile_string"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cafe"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/university"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.ar.oxford.oxfordtourar.Util.SquareLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/image_attraction"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/university_icn" />
+                </com.ar.oxford.oxfordtourar.Util.SquareLayout>
+                <TextView
+                    android:id="@+id/attraction_tile_string"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="University"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/park"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:clickable="true"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <com.ar.oxford.oxfordtourar.Util.SquareLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <ImageView
+                        android:id="@+id/image_attraction"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/tree_icn" />
+                </com.ar.oxford.oxfordtourar.Util.SquareLayout>
+                <TextView
+                    android:id="@+id/attraction_tile_string"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Park"
+                    android:gravity="center"
+                    android:padding="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+
+    </android.support.design.widget.AppBarLayout>
+
+    <include layout="@layout/content_arexplore" />
+
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:id="@+id/bottomBar">
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="#000000"
+            android:id="@+id/extend_button_layout"
+            android:visibility="gone"
+            android:layout_above="@+id/linear_bottom">
+
+            <ImageView
+                android:id="@+id/extend_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:src="@drawable/expand_more_icon"/>
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/bottom_setting_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_above="@+id/extend_button_layout" >
+            <!--textview for seekbar-->
+            <TextView
+                android:id="@+id/seekbar_distance_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Max Distance Metres"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal" />
+            <SeekBar
+                android:id="@+id/seekBar_distance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dip" />
+            <!--textview for seekbar-->
+            <TextView
+                android:id="@+id/seekBar_pullCloser_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pull Closer Distance"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal" />
+            <SeekBar
+                android:id="@+id/seekBar_pullCloser"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dip" />
+
+            <TextView
+                android:id="@+id/seekBar_pushAway_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Push Away Distance"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal" />
+            <SeekBar
+                android:id="@+id/seekBar_pushAway"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dip" />
+            <TextView
+                android:id="@+id/seekBar_dstFactor_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Distance Factor"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:layout_gravity="center_horizontal" />
+            <SeekBar
+                android:id="@+id/seekBar_dstFactor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dip" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_bottom"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#000000"
+            android:layout_alignParentBottom="true">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="110dp">
+
+                <!--For align textview in middle -->
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:id="@+id/right_button"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:onClick="loadButton"
+                    android:layout_toRightOf="@+id/radarLayout"
+                    android:layout_toEndOf="@+id/radarLayout">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:text="Analyse"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true" />
+
+                </RelativeLayout>
+
+                <FrameLayout
+                    android:id="@+id/radarLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="100dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:onClick="loadButton"
+                    android:background="@drawable/radar_bg_small1" >
+                    <com.beyondar.android.plugin.radar.RadarView
+                        android:id="@+id/radarView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:src="@drawable/radar_north_small1" />
+                </FrameLayout>
+
+                <!--For align textview in middle -->
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:id="@+id/left_button"
+                    android:onClick="loadButton"
+                    android:layout_toLeftOf="@+id/radarLayout"
+                    android:layout_toStartOf="@+id/radarLayout">
+                    <TextView
+                        android:id="@+id/distanceTextButtonTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textColor="#FFFFFF"
+                        android:textSize="18sp"
+                        android:text="Distance"
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</RelativeLayout>
+
+
+<!--
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_dialog_email" />
+-->
+
+
+    <!--
+    list of places bottomsheet view
+    -->
+<!--
+    <LinearLayout
+        android:background="@android:color/transparent"
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="80dp">
+        <TextView
+            android:background="#002147"
+            android:id="@+id/txtHeader"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="List of Places"
+            android:layout_marginTop="18dp"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:background="#fff"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp" />
+    </LinearLayout>
+-->
+
+    <!--
+       list of places bottomsheet view
+       -->
+    <LinearLayout
+        android:background="@android:color/transparent"
+        android:id="@+id/bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:behavior_peekHeight="0dp">
+        <TextView
+            android:background="#002147"
+            android:id="@+id/txtHeader"
+            android:layout_width="fill_parent"
+            android:layout_height="60dp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:text="List of Places"
+            android:layout_marginTop="18dp"/>
+        <android.support.v7.widget.RecyclerView
+            android:background="#fff"
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp" />
+    </LinearLayout>
+
+    <!--googlemaps like bottom view-->
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/expanded_appbarlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        android:tag="modal-appbar"
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.SecondAppBarLayoutBehaviorAR">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/expanded_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title=""
+            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"/>
+
+    </android.support.design.widget.AppBarLayout>
+    <ImageView
+        android:id="@+id/bottomsheet_backdrop2"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/cheese_3"
+        app:behavior_backdrop_peekHeight="140dp"
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.BackdropBottomSheetBehavior"/>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:behavior_peekHeight="140dp"
+        android:id="@+id/bottom_sheet_place_detail"
+
+        app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.BottomSheetBehaviorGoogleMapsLike"
+        app:anchorPoint="200dp">
+
+        <include
+            layout="@layout/bottom_sheet_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </android.support.v4.widget.NestedScrollView>
+    <!-- end of google maps -->
+
+
+</android.support.design.widget.CoordinatorLayout>
