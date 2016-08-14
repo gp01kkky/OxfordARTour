@@ -7,6 +7,7 @@
     android:background="@drawable/oxford_background2"
     android:fitsSystemWindows="true"
     tools:context="com.ar.oxford.oxfordtourar.PlacesInTrip">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -25,36 +26,39 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <android.support.v4.widget.NestedScrollView
+        <ImageView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="400dp"
+            android:id="@+id/places_in_trip_image"
+            android:src="@drawable/oxford_image"
+            android:scaleType="fitXY"
+            android:layout_weight="1" />
+
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </FrameLayout>
+
+
+        <!--<android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical">
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:id="@+id/places_in_trip_image"
-                    android:src="@drawable/oxford_image"
-                    android:scaleType="fitXY"
-                    android:focusableInTouchMode="true"/>
 
-                <android.support.v7.widget.RecyclerView
-                    android:background="#fff"
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/places_in_trip_image"/>
+
+
             </LinearLayout>
 
-
         </android.support.v4.widget.NestedScrollView>
-
+-->
     </LinearLayout>
-
 </android.support.design.widget.CoordinatorLayout>
 
 

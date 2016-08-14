@@ -80,9 +80,11 @@
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".ARViewActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".ARCamera"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_maps" />
         <activity
             android:name=".ARGoogleMapActivity"
@@ -94,10 +96,12 @@
         <activity
             android:name=".RoutePlannerActivity"
             android:label="@string/title_activity_route_planner"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".PlacesInTrip"
             android:label="@string/title_activity_places_in_trip"
+            android:screenOrientation="portrait"
             android:parentActivityName=".RoutePlannerActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
@@ -107,10 +111,6 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".Testing" />
         <activity
-            android:name=".PlacesInTripActivity"
-            android:label="@string/title_activity_places_in_trip"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".ARExploreActivity"
             android:label="@string/title_activity_arexplore"
             android:screenOrientation="portrait"
@@ -119,6 +119,7 @@
         <activity
             android:name=".SimpleCameraWithRadarActivity"
             android:label="@string/title_activity_arexplore"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
     </application>

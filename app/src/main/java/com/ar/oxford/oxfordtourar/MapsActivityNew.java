@@ -382,7 +382,6 @@ public class MapsActivityNew extends AppCompatActivity implements LocationListen
             }
         });
 
-        price_row = (LinearLayout) bottomSheet.findViewById(R.id.price_row);
         phone_row = (LinearLayout) bottomSheet.findViewById(R.id.phone_row);
         address_row = (LinearLayout) bottomSheet.findViewById(R.id.address_row);
         website_row = (LinearLayout) bottomSheet.findViewById(R.id.website_row);
@@ -483,9 +482,9 @@ public class MapsActivityNew extends AppCompatActivity implements LocationListen
                                 if (!obj.isNull("name")) {
                                     newPlace.setName(obj.getString("name"));
                                 }
-                                if(!obj.isNull("rating"))
+                                if(!obj.isNull("ratingTextView"))
                                 {
-                                    newPlace.setRating(Float.parseFloat(obj.getString("rating")));
+                                    newPlace.setRating(Float.parseFloat(obj.getString("ratingTextView")));
                                 }
                                 newPlace.setLat(obj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
                                 newPlace.setLng(obj.getJSONObject("geometry").getJSONObject("location").getString("lng"));
@@ -586,9 +585,9 @@ public class MapsActivityNew extends AppCompatActivity implements LocationListen
                                 if (!obj.isNull("name")) {
                                     newPlace.setName(obj.getString("name"));
                                 }
-                                if(!obj.isNull("rating"))
+                                if(!obj.isNull("ratingTextView"))
                                 {
-                                    newPlace.setRating(Float.parseFloat(obj.getString("rating")));
+                                    newPlace.setRating(Float.parseFloat(obj.getString("ratingTextView")));
                                 }
                                 newPlace.setLat(obj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
                                 newPlace.setLng(obj.getJSONObject("geometry").getJSONObject("location").getString("lng"));

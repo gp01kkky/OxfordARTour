@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/row"
+    android:background="@drawable/list_row_selector"
+    android:orientation="vertical"
+    android:padding="8dp" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="#FFFFFF"
+        android:paddingTop="10dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="10dp">
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="8dp" />
+
+        <TextView
+            android:id="@+id/author_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Kelvin Khoo"
+            android:textColor="@color/places_details_dark_grey"
+            android:textSize="@dimen/place_details_info_textsize_large"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:layout_toEndOf="@+id/thumbnail" />
+
+        <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:isIndicator="true"
+            style="?android:attr/ratingBarStyleSmall"
+            android:id="@+id/ratingBar"
+            android:layout_centerVertical="true"
+            android:layout_alignLeft="@+id/author_name"
+            android:layout_alignStart="@+id/author_name" />
+
+        <TextView
+            android:id="@+id/ratings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:text="(0.0) "
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/place_details_info_textsize"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_alignBottom="@+id/ratingBar"
+            android:layout_toRightOf="@+id/ratingBar"
+            android:layout_toEndOf="@+id/ratingBar" />
+
+        <TextView
+            android:id="@+id/time_stamp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="1 months ago"
+            android:textColor="@color/places_details_light_grey"
+            android:textSize="@dimen/place_details_info_textsize"
+            android:layout_marginTop="5dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:layout_below="@+id/ratingBar"
+            android:layout_toRightOf="@+id/thumbnail"
+            android:layout_toEndOf="@+id/thumbnail" />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/review"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="Awesome Place to have a dinner with your love one, I have tried it and it is the best"
+        android:textColor="@color/places_details_dark_grey"
+        android:textSize="@dimen/place_details_info_textsize"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:layout_toEndOf="@+id/thumbnail" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="10dp"
+        android:background="#c0c0c0"/>
+</LinearLayout>

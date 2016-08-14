@@ -152,7 +152,7 @@ public class DisplayTripPlacesActivity extends AppCompatActivity implements com.
 
     Place currentPlaceDetail;//to store current place detail.
 
-    DatabaseHelper db;
+
     CustomTripDialogAdapter customTripDialogAdapter;
 
     List<Place> storedPlaces;
@@ -166,12 +166,18 @@ public class DisplayTripPlacesActivity extends AppCompatActivity implements com.
         //Bundle bundle = getIntent().getExtras();
         //storedPlaces = bundle.getParcelableArrayList("places");
 
-        generateGoogleMapApiUrlHelper = new GenerateGoogleMapApiUrl();
+        //==============================================================================================
+        // Generate Direction Section
+        //==============================================================================================
         db = new DatabaseHelper(getApplicationContext());
-
         int tripId = getIntent().getExtras().getInt("trip_id");
-        storedPlaces = db.getAllPlacesByTrip(tripId); // get all places list
+        storedPlaces = db.getAllPlacesByTripWithoutPlaceTrip(tripId); // get all places list
 
+
+
+
+
+        generateGoogleMapApiUrlHelper = new GenerateGoogleMapApiUrl();
         setContentView(R.layout.activity_display_trip_places);
         context = DisplayTripPlacesActivity.this;
 
@@ -239,7 +245,6 @@ public class DisplayTripPlacesActivity extends AppCompatActivity implements com.
         autocompleteTextView = (AutoCompleteTextView)
                 findViewById(R.id.autocomplete_textview);
 
-        price_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.price_row);
         phone_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.phone_row);
         address_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.address_row);
         website_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.website_row);
@@ -521,9 +526,9 @@ public class DisplayTripPlacesActivity extends AppCompatActivity implements com.
                                 if (!obj.isNull("name")) {
                                     newPlace.setName(obj.getString("name"));
                                 }
-                                if(!obj.isNull("rating"))
+                                if(!obj.isNull("ratingTextView"))
                                 {
-                                    newPlace.setRating(Float.parseFloat(obj.getString("rating")));
+                                    newPlace.setRating(Float.parseFloat(obj.getString("ratingTextView")));
                                 }
                                 newPlace.setLat(obj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
                                 newPlace.setLng(obj.getJSONObject("geometry").getJSONObject("location").getString("lng"));
@@ -609,9 +614,9 @@ public class DisplayTripPlacesActivity extends AppCompatActivity implements com.
                             if (!obj.isNull("name")) {
                                 newPlace.setName(obj.getString("name"));
                             }
-                            if(!obj.isNull("rating"))
+                            if(!obj.isNull("ratingTextView"))
                             {
-                                newPlace.setRating(Float.parseFloat(obj.getString("rating")));
+                                newPlace.setRating(Float.parseFloat(obj.getString("ratingTextView")));
                             }
                             newPlace.setLat(obj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
                             newPlace.setLng(obj.getJSONObject("geometry").getJSONObject("location").getString("lng"));
@@ -1298,4 +1303,9 @@ public class DisplayTripPlacesActivity extends AppCompatActivity implements com.
         googleMap.addPolyline(lineOptions);
     }
 
+
+    //==============================================================================================
+    // Google Maps Display Navigation
+    //==============================================================================================
+    DatabaseHelper db;
 }

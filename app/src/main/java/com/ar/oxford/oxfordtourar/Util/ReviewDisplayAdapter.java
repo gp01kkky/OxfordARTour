@@ -1,40 +1,41 @@
-package com.ar.oxford.oxfordtourar.MapHelper;
+package com.ar.oxford.oxfordtourar.Util;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.ar.oxford.oxfordtourar.R;
-import com.ar.oxford.oxfordtourar.Util.AppController;
-import com.ar.oxford.oxfordtourar.model.Place;
+import com.ar.oxford.oxfordtourar.model.Review;
 
+import java.util.Date;
 import java.util.List;
 
 /**
  * Created by Kelvin Khoo on 29/06/2016.
  */
-public class  GooglePlacesDisplayAdapterCustom extends RecyclerView.Adapter<GooglePlacesDisplayAdapterCustom.ItemHolder>{
+public class  ReviewDisplayAdapter extends RecyclerView.Adapter<ReviewDisplayAdapter.ItemHolder>{
 
-    private List<Place> list;
+    private List<Review> list;
     private OnItemClickListener onItemClickListener;
 
 
-    public GooglePlacesDisplayAdapterCustom(List<Place> list) {
+    public ReviewDisplayAdapter(List<Review> list) {
         this.list = list;
     }
 
     @Override
-    public GooglePlacesDisplayAdapterCustom.ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.places_list_row, parent, false);
+    public ReviewDisplayAdapter.ItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.review_row, parent, false);
         return new ItemHolder(itemView, this);
     }
 
     @Override
-    public void onBindViewHolder(GooglePlacesDisplayAdapterCustom.ItemHolder holder, int position) {
+    public void onBindViewHolder(ReviewDisplayAdapter.ItemHolder holder, int position) {
         holder.bind(list.get(position));
     }
 
@@ -57,35 +58,40 @@ public class  GooglePlacesDisplayAdapterCustom extends RecyclerView.Adapter<Goog
 
     public static class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        private GooglePlacesDisplayAdapterCustom adapter;
-        TextView title;
-        TextView rating;
-        TextView address;
-        TextView distance;
+        private ReviewDisplayAdapter adapter;
         ImageLoader imageLoader;
         NetworkImageView thumbNail;
+        TextView authorName;
+        RatingBar ratingBar;
+        TextView ratings;
+        TextView timestamp;
+        TextView review;
 
-        public ItemHolder(View itemView, GooglePlacesDisplayAdapterCustom parent) {
+
+
+        public ItemHolder(View itemView, ReviewDisplayAdapter parent) {
             super(itemView);
             imageLoader = AppController.getInstance().getImageLoader();
             itemView.setOnClickListener(this);
             this.adapter = parent;
 
             thumbNail = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
-            title = (TextView) itemView.findViewById(R.id.title);
-            rating = (TextView) itemView.findViewById(R.id.rating);
-            address = (TextView) itemView.findViewById(R.id.address);
-            distance = (TextView) itemView.findViewById(R.id.distance);
+            authorName = (TextView) itemView.findViewById(R.id.author_name);
+            ratingBar = (RatingBar) itemView.findViewById(R.id.ratingBar);
+            ratings = (TextView) itemView.findViewById(R.id.ratings);
+            timestamp = (TextView) itemView.findViewById(R.id.time_stamp);
+            review = (TextView) itemView.findViewById(R.id.review);
         }
 
-        public void bind(Place item) {
-            title.setText(item.getName());
-            rating.setText(Double.toString(item.getRating()));
-            address.setText(item.getName());
-            int distanceFromUser = (int)item.getDistance();
-            distance.setText(Integer.toString(distanceFromUser));
-            String imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=" + item.getPhoto_reference()+"&key=AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
-            thumbNail.setErrorImageResId(R.drawable.no_image_icon);
+        public void bind(Review item) {
+            authorName.setText(item.getAuthorName());
+            ratings.setText(Float.toString(item.getRating()));
+            ratingBar.setRating(item.getRating());
+            Date date = new Date(item.getTimeStamp()*1000);
+            timestamp.setText(date.toString());
+            review.setText(item.getReview());
+            String imageUrl = "http:"+item.getPhotoUrl();
+            thumbNail.setErrorImageResId(R.drawable.no_profile_pic_icon);
             thumbNail.setImageUrl(imageUrl,imageLoader);
         }
 
@@ -99,4 +105,5 @@ public class  GooglePlacesDisplayAdapterCustom extends RecyclerView.Adapter<Goog
     }
 
 }
+
 

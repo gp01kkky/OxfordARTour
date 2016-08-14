@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import com.ar.oxford.oxfordtourar.model.Place;
+import com.ar.oxford.oxfordtourar.model.PlaceTrip;
 import com.ar.oxford.oxfordtourar.model.Trip;
 
 import java.text.SimpleDateFormat;
@@ -35,7 +36,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String TABLE_TRIP_PLACE = "trip_place";
 
     // Common column names
-    private static final String ID = "id";
+    private static final String TRIP_TABLE_ID = "trip_table_id";
+    private static final String PLACE_TABLE_ID = "place_table_id";
+    private static final String TRIP_PLACE_TABLE_ID = "trip_place_table_id";
     private static final String CREATED_AT = "created_at";
 
     // Trips Table column names
@@ -57,11 +60,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     // TRIP PLACE TABLE
     private static final String KEY_TRIP_ID = "trip_id";
     private static final String KEY_PLACE_ID = "place_id";
+    private static final String DURATION = "duration";
+    private static final String POSITION = "position";
 
     // Table create statement
     // TRIP Table create statement
     private static final String CREATE_TABLE_TRIP = "CREATE TABLE "
-            + TABLE_TRIP + "(" + ID + " INTEGER PRIMARY KEY,"
+            + TABLE_TRIP + "(" + TRIP_TABLE_ID + " INTEGER PRIMARY KEY,"
             + TRIP_NAME + " TEXT,"
             + CREATED_AT + " DATETIME"
             + ")";
@@ -69,7 +74,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     // PLACE Table create statement
     private static final String CREATE_PLACE_TABLE = "CREATE TABLE "
             + TABLE_PLACE + "("
-            + ID + " INTEGER PRIMARY KEY,"
+            + PLACE_TABLE_ID + " INTEGER PRIMARY KEY,"
             + PLACE_ID + " TEXT,"
             + PLACE_TYPE + " TEXT,"
             + LATITUDE + " TEXT,"
@@ -86,9 +91,11 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     // TRIP_PLACE TABLE CREATE STATEMENT
     private static final String CREATE_TRIP_PLACE_TABLE = "CREATE TABLE "
-            + TABLE_TRIP_PLACE + "(" + ID + " INTEGER PRIMARY KEY,"
+            + TABLE_TRIP_PLACE + "(" + TRIP_PLACE_TABLE_ID + " INTEGER PRIMARY KEY,"
             + KEY_TRIP_ID + " TEXT,"
             + KEY_PLACE_ID + " TEXT,"
+            + POSITION + " INTEGER DEFAULT -1,"
+            + DURATION + " INTEGER DEFAULT 0,"
             + CREATED_AT + " DATETIME"
             + ")";
 
@@ -126,7 +133,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     {
         SQLiteDatabase db = this.getReadableDatabase();
         String selectQuery = "SELECT * FROM " + TABLE_PLACE + " WHERE "
-                + ID + " = " + id;
+                + PLACE_TABLE_ID + " = " + id;
         Log.e(LOG, selectQuery);
         Cursor result = db.rawQuery(selectQuery,null);
         if(result !=null)
@@ -134,7 +141,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             result.moveToFirst();
         }
         Place place = new Place();
-        place.setId(result.getInt(result.getColumnIndex(ID)));
+        place.setId(result.getInt(result.getColumnIndex(PLACE_TABLE_ID)));
         place.setPlace_id(result.getString(result.getColumnIndex(PLACE_ID)));
         place.setType(result.getString(result.getColumnIndex(PLACE_TYPE)));
         place.setLat(result.getString(result.getColumnIndex(LATITUDE)));
@@ -175,13 +182,13 @@ public class DatabaseHelper extends SQLiteOpenHelper{
      * @param trip_id
      * @return
      */
-    public List<Place> getAllPlacesByTrip(int trip_id)
+    public List<Place> getAllPlacesByTripWithoutPlaceTrip(int trip_id)
     {
         List<Place> placeList = new ArrayList<Place>();
 
 
         String selectQuery = "SELECT * FROM " + TABLE_PLACE + " AS P WHERE "
-                + "P." + ID + " IN (SELECT " + KEY_PLACE_ID + " FROM " + TABLE_TRIP_PLACE
+                + "P." + PLACE_TABLE_ID + " IN (SELECT " + KEY_PLACE_ID + " FROM " + TABLE_TRIP_PLACE
                 + " WHERE " + KEY_TRIP_ID + " = '" + trip_id + "')";
 
         SQLiteDatabase db = this.getReadableDatabase();
@@ -190,7 +197,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         if(result.moveToFirst()) {
             do{
                 Place place = new Place();
-                place.setId(result.getInt(result.getColumnIndex(ID)));
+                place.setId(result.getInt(result.getColumnIndex(PLACE_TABLE_ID)));
                 place.setPlace_id(result.getString(result.getColumnIndex(PLACE_ID)));
                 place.setType(result.getString(result.getColumnIndex(PLACE_TYPE)));
                 place.setLat(result.getString(result.getColumnIndex(LATITUDE)));
@@ -208,10 +215,53 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return placeList;
     }
 
+    /**
+     * Gives a list of place that belongs to a trip
+     * @param trip_id
+     * @return
+     */
+    public List<PlaceTrip> getAllPlacesByTrip(int trip_id)
+    {
+        List<PlaceTrip> placeList = new ArrayList<PlaceTrip>();
+
+
+        String selectQuery = "SELECT * FROM " + TABLE_PLACE +","+TABLE_TRIP_PLACE + " WHERE "
+                + PLACE_TABLE_ID + " IN (SELECT " + KEY_PLACE_ID + " FROM " + TABLE_TRIP_PLACE
+                + " WHERE " + KEY_TRIP_ID + " = '" + trip_id + "')"+" AND " + PLACE_TABLE_ID + "=" + TABLE_TRIP_PLACE+"."+KEY_PLACE_ID;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor result = db.rawQuery(selectQuery, null);
+        // loop through all rows and add to list
+        if(result.moveToFirst()) {
+            do{
+                Place place = new Place();
+                place.setId(result.getInt(result.getColumnIndex(PLACE_TABLE_ID)));
+                place.setPlace_id(result.getString(result.getColumnIndex(PLACE_ID)));
+                place.setType(result.getString(result.getColumnIndex(PLACE_TYPE)));
+                place.setLat(result.getString(result.getColumnIndex(LATITUDE)));
+                place.setLng(result.getString(result.getColumnIndex(LONGITUDE)));
+                place.setName(result.getString(result.getColumnIndex(PLACE_NAME)));
+                place.setPhoto_reference(result.getString(result.getColumnIndex(PHOTO_REFERENCE)));
+                place.setPrice_level(result.getString(result.getColumnIndex(PRICE_LEVEL)));
+                place.setRating(result.getFloat(result.getColumnIndex(RATING)));
+                place.setPhone_number(result.getString(result.getColumnIndex(PHONE_NUMBER)));
+                place.setAddress(result.getString(result.getColumnIndex(ADDRESS)));
+                place.setWebsite(result.getString(result.getColumnIndex(WEBSITE)));
+                int position = result.getInt(result.getColumnIndex(POSITION));
+                int duration = result.getInt(result.getColumnIndex(DURATION));
+                int placeTripID = result.getInt(result.getColumnIndex(TRIP_PLACE_TABLE_ID));
+                PlaceTrip newPlaceTrip = new PlaceTrip(place,position,duration);
+                newPlaceTrip.setPlaceTripid(placeTripID);
+                placeList.add(newPlaceTrip);
+            }while (result.moveToNext());
+        }
+        return placeList;
+    }
+
     public void deletePlaces(long id)
     {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_PLACE, ID + " = ?",new String[] { String.valueOf(id) });
+        db.delete(TABLE_PLACE, PLACE_TABLE_ID + " = ?",new String[] { String.valueOf(id) });
     }
 
     // create a trip in the database
@@ -287,13 +337,30 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         if(result.moveToFirst()) {
             do {
                 Trip trip = new Trip();
-                trip.setId(result.getInt(result.getColumnIndex(ID)));
+                trip.setId(result.getInt(result.getColumnIndex(TRIP_TABLE_ID)));
                 trip.setTripName(result.getString(result.getColumnIndex(TRIP_NAME)));
                 trip.setCreated_at(result.getString(result.getColumnIndex(CREATED_AT)));
                 tripList.add(trip);
             }while(result.moveToNext());
         }
         return tripList;
+    }
+
+    public int updateTripPlaceWithPosition(int position, long tripPlaceTableID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(POSITION,position);
+        return db.update(TABLE_TRIP_PLACE,values,TRIP_PLACE_TABLE_ID +"=" +tripPlaceTableID,null);
+    }
+
+
+    public int updateTripPlaceDuration(int duration, long tripPlaceTableID )
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DURATION,duration);
+        return db.update(TABLE_TRIP_PLACE,values,TRIP_PLACE_TABLE_ID +"=" +tripPlaceTableID,null);
     }
 
     // update name of a trip
@@ -303,7 +370,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         ContentValues values = new ContentValues();
         values.put(TRIP_NAME,trip.getTripName());
         // update db
-        return db.update(TABLE_TRIP, values, ID + " = ?", new String[] {String.valueOf(trip.getId())});
+        return db.update(TABLE_TRIP, values, TRIP_TABLE_ID + " = ?", new String[] {String.valueOf(trip.getId())});
     }
 
     // close database

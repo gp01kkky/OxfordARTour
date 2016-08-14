@@ -491,9 +491,9 @@ public class MapsActivity extends FragmentActivity implements LocationListener,O
                                 if (!obj.isNull("name")) {
                                     newPlace.setName(obj.getString("name"));
                                 }
-                                if(!obj.isNull("rating"))
+                                if(!obj.isNull("ratingTextView"))
                                 {
-                                    newPlace.setRating(Float.parseFloat(obj.getString("rating")));
+                                    newPlace.setRating(Float.parseFloat(obj.getString("ratingTextView")));
                                 }
                                 newPlace.setLat(obj.getJSONObject("geometry").getJSONObject("location").getString("lat"));
                                 newPlace.setLng(obj.getJSONObject("geometry").getJSONObject("location").getString("lng"));

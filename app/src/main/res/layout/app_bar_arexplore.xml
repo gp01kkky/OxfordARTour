@@ -221,6 +221,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_marginBottom="50dp"
             android:layout_above="@+id/extend_button_layout" >
             <!--textview for seekbar-->
             <TextView
@@ -457,14 +458,14 @@
         android:layout_height="200dp"
         android:scaleType="centerCrop"
         android:src="@drawable/cheese_3"
-        app:behavior_backdrop_peekHeight="140dp"
+        app:behavior_backdrop_peekHeight="150dp"
         app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.BackdropBottomSheetBehavior"/>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        app:behavior_peekHeight="140dp"
+        app:behavior_peekHeight="150dp"
         android:id="@+id/bottom_sheet_place_detail"
 
         app:layout_behavior="com.ar.oxford.oxfordtourar.BottomViewLayout.BottomSheetBehaviorGoogleMapsLike"

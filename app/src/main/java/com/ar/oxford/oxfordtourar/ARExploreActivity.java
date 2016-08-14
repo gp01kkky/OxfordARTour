@@ -178,7 +178,6 @@ public class ARExploreActivity extends AppCompatActivity
     private GenerateGoogleMapApiUrl urlGenerator;
 
     public TextView placeNameTextView;
-    private LinearLayout price_row;
     private LinearLayout open_time_row;
     private LinearLayout phone_row;
     private LinearLayout address_row;
@@ -567,7 +566,6 @@ public class ARExploreActivity extends AppCompatActivity
         bottomsheetbehaviorgoogle = BottomSheetBehaviorGoogleMapsLike.from(bottomSheetPlaceDetails);
 
         // UI MAPPING
-        price_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.price_row);
         phone_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.phone_row);
         address_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.address_row);
         website_row = (LinearLayout) bottomSheetPlaceDetails.findViewById(R.id.website_row);
@@ -904,7 +902,12 @@ public class ARExploreActivity extends AppCompatActivity
     @Override
     public void onLocationChanged(Location location) {
         prevLocation = mCurrentLocation;
+
         mCurrentLocation = location;
+        if(prevLocation==null)
+        {
+            prevLocation=mCurrentLocation;
+        }
         latitude = mCurrentLocation.getLatitude();
         longitude = mCurrentLocation.getLongitude();
         googlePlacesAutocompleteAdapter.setLatitude(latitude);
@@ -2081,11 +2084,10 @@ public class ARExploreActivity extends AppCompatActivity
                             priceTextView.setText(priceString);
                             /*priceTextView.requestLayout();
                             priceTextView.invalidate();*/
-                            price_row.setVisibility(View.VISIBLE);
                         }
                         else
                         {
-                            price_row.setVisibility(View.GONE);
+                            priceTextView.setText("");
                         }
 
                         if(!newPlacesList.get(0).getPhone_number().equals(""))

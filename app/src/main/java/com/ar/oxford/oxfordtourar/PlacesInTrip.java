@@ -2,6 +2,9 @@ package com.ar.oxford.oxfordtourar;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,8 +16,12 @@ import android.view.MenuItem;
 
 import com.ar.oxford.oxfordtourar.MapHelper.GooglePlacesDisplayAdapterCustom;
 import com.ar.oxford.oxfordtourar.Util.DatabaseHelper;
+import com.ar.oxford.oxfordtourar.Util.ListFragmentPlacesInTrip;
 import com.ar.oxford.oxfordtourar.model.Place;
+import com.google.android.gms.appindexing.AppIndex;
+import com.google.android.gms.common.api.GoogleApiClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PlacesInTrip extends AppCompatActivity {
@@ -22,18 +29,25 @@ public class PlacesInTrip extends AppCompatActivity {
     private List<Place> placeList;
     private DatabaseHelper db;
     private int tripId;
+    /**
+     * ATTENTION: This was auto-generated to implement the App Indexing API.
+     * See https://g.co/AppIndexing/AndroidStudio for more information.
+     */
+    private GoogleApiClient client;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        db = new DatabaseHelper(getApplicationContext());
+        //db = new DatabaseHelper(getApplicationContext());
 
         tripId = getIntent().getExtras().getInt("trip_id"); // get id from previous activity
-        placeList = db.getAllPlacesByTrip(tripId); // get all places list
+        //placeList = db.getAllPlacesByTrip(tripId); // get all places list
 
-       setContentView(R.layout.activity_places_in_trip);
+        setContentView(R.layout.activity_places_in_trip);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
         /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -44,15 +58,30 @@ public class PlacesInTrip extends AppCompatActivity {
             }
         });*/
 
-        createPlacesList(placeList);
+        //createPlacesList(placeList);
+
+        ListFragmentPlacesInTrip fragment = ListFragmentPlacesInTrip.newInstance();
+        fragment.setTripId(tripId);
+        fragment.setContext(PlacesInTrip.this);
+        showFragment(fragment);
+
+
+        // ATTENTION: This was auto-generated to implement the App Indexing API.
+        // See https://g.co/AppIndexing/AndroidStudio for more information.
+        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+    }
+
+    private void showFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment, "fragment").commit();
     }
 
     /**
      * Create list of places
+     *
      * @param mPlaceList
      */
-    private void createPlacesList(final List<Place> mPlaceList)
-    {
+    private void createPlacesList(final List<Place> mPlaceList) {
         GooglePlacesDisplayAdapterCustom adapter = new GooglePlacesDisplayAdapterCustom(mPlaceList);
         adapter.setOnItemClickListener(new GooglePlacesDisplayAdapterCustom.OnItemClickListener() {
             @Override
@@ -86,16 +115,20 @@ public class PlacesInTrip extends AppCompatActivity {
                 NavUtils.navigateUpFromSameTask(this);
                 return true;
             case R.id.map_button:
-                Intent intent = new Intent(getApplicationContext(),DisplayTripPlacesActivity.class);
-                /*Bundle bundle = new Bundle();
+                Intent intent = new Intent(getApplicationContext(), DisplayTripPlacesActivity.class);
+                Bundle bundle = new Bundle();
                 bundle.putParcelableArrayList("places", (ArrayList<? extends Parcelable>) placeList);
-                intent.putExtras(bundle);*/
-                intent.putExtra("trip_id",tripId);
-                //startActivity(intent);
+                intent.putExtras(bundle);
+                intent.putExtra("trip_id", tripId);
+                startActivity(intent);
             default:
                 break;
         }
 
         return true;
     }
+
+
+
+
 }
