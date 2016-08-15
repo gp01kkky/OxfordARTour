@@ -19,7 +19,11 @@ package com.ar.oxford.oxfordtourar.Util;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -29,14 +33,25 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ar.oxford.oxfordtourar.BottomViewLayout.LayoutWrapContentUpdater;
+import com.ar.oxford.oxfordtourar.PlacesInTrip;
 import com.ar.oxford.oxfordtourar.R;
 import com.ar.oxford.oxfordtourar.model.PlaceTrip;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Places;
 import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
@@ -57,29 +72,44 @@ public class ListFragmentPlacesInTrip extends Fragment {
     private LayoutWrapContentUpdater layoutUpdater;
     private LinearLayout layout;
     private ItemAdapter listAdapter;
+    private Location location;
 
     public static ListFragmentPlacesInTrip newInstance() {
 
         return new ListFragmentPlacesInTrip();
     }
 
-    public void setTripId(int tripId)
-    {
+    public void setTripId(int tripId) {
         this.tripId = tripId;
     }
-    public void setContext(Context context)
-    {
+
+    public void setContext(Context context) {
         this.context = context;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+        if (mItemArray != null&&location!=null) {
+            for (int i = 0; i < mItemArray.size(); i++) {
+                Location placeLocation = new Location("");
+                placeLocation.setLatitude(Double.parseDouble(mItemArray.get(i).second.getLat()));
+                placeLocation.setLongitude(Double.parseDouble(mItemArray.get(i).second.getLng()));
+                mItemArray.get(i).second.setDistance(location.distanceTo(placeLocation));
+            }
+        }
+        updateUI();
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mItemArray = new ArrayList<>();
         db = new DatabaseHelper(context);
         layoutUpdater = new LayoutWrapContentUpdater();
         placeList = db.getAllPlacesByTrip(tripId); // get all places list
         // auto sort the object list based on position
         Collections.sort(placeList, new PositionComparator());
+
 
     }
 
@@ -105,19 +135,18 @@ public class ListFragmentPlacesInTrip extends Fragment {
                 mRefreshLayout.setEnabled(true);
                 if (fromPosition != toPosition) {
                     String test = "";
-                    for(int i=0;i<mItemArray.size();i++)
-                    {
-                        test=test+mItemArray.get(i).second.getName()+", ";
+                    for (int i = 0; i < mItemArray.size(); i++) {
+                        test = test + mItemArray.get(i).second.getName() + ", ";
                     }
                     Toast.makeText(mDragListView.getContext(), test, Toast.LENGTH_LONG).show();
                     updateUI();
 
 
-            }
+                }
             }
         });
 
-        mItemArray = new ArrayList<>();
+
         for (int i = 0; i < placeList.size(); i++) {
 
             //Place place = new Place();
@@ -139,6 +168,7 @@ public class ListFragmentPlacesInTrip extends Fragment {
         });
 
         setupListRecyclerView();
+        setLocation(location);
         return view;
     }
 
@@ -154,11 +184,11 @@ public class ListFragmentPlacesInTrip extends Fragment {
         listAdapter = new ItemAdapter(mItemArray, R.layout.place_trip_row, R.id.thumbnail, false);
 
 
-        listAdapter.setOnItemLongClickListener(new ItemAdapter.OnItemLongClickListener(){
+        listAdapter.setOnItemLongClickListener(new ItemAdapter.OnItemLongClickListener() {
 
             @Override
             public void onItemLongClick(ItemAdapter.ItemHolder item, final int position) {
-                Toast.makeText(context, mItemArray.get(position).second.getName()+"Long Click", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, mItemArray.get(position).second.getName() + "Long Click", Toast.LENGTH_LONG).show();
 
                 final EditText taskEditText = new EditText(context);
                 AlertDialog dialog = new AlertDialog.Builder(context)
@@ -169,11 +199,11 @@ public class ListFragmentPlacesInTrip extends Fragment {
                             public void onClick(DialogInterface dialog, int which) {
                                 String duration = String.valueOf(taskEditText.getText());
                                 Boolean wantToCloseDialog = (duration.toString().trim().isEmpty());
-                                if(!wantToCloseDialog) {
+                                if (!wantToCloseDialog) {
                                     mItemArray.get(position).second.setDuration(Integer.parseInt(duration));
-                                    db.updateTripPlaceDuration(Integer.parseInt(duration),mItemArray.get(position).second.getPlaceTripid());
-                                    updateUI();                                }
-                                else {
+                                    db.updateTripPlaceDuration(Integer.parseInt(duration), mItemArray.get(position).second.getPlaceTripid());
+                                    updateUI();
+                                } else {
 
                                 }
                             }
@@ -187,11 +217,11 @@ public class ListFragmentPlacesInTrip extends Fragment {
 
         });
 
-        listAdapter.setOnItemClickListener(new ItemAdapter.OnItemClickListener(){
+        listAdapter.setOnItemClickListener(new ItemAdapter.OnItemClickListener() {
 
             @Override
             public void onItemClick(ItemAdapter.ItemHolder item, int position) {
-                Toast.makeText(context, mItemArray.get(position).second.getName()+"Click", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, mItemArray.get(position).second.getName() + "Click", Toast.LENGTH_LONG).show();
             }
 
         });
@@ -220,34 +250,37 @@ public class ListFragmentPlacesInTrip extends Fragment {
             ((TextView) dragView.findViewById(R.id.distance)).setText(distance);
             CharSequence duration = ((TextView) clickedView.findViewById(R.id.duration)).getText();
             ((TextView) dragView.findViewById(R.id.duration)).setText(duration);
+            boolean checked = ((CheckBox) clickedView.findViewById(R.id.checkBox)).isChecked();
+            ((CheckBox) dragView.findViewById(R.id.checkBox)).setChecked(checked);
+            Float rating_bar = ((RatingBar) clickedView.findViewById(R.id.ratingBar)).getRating();
+            ((RatingBar) dragView.findViewById(R.id.ratingBar)).setRating(rating_bar);
             dragView.setBackgroundColor(dragView.getResources().getColor(R.color.list_row_end_color));
         }
     }
 
     public void updateUI() {
-        listAdapter.updateResults(mItemArray);
-        mDragListView.setAdapter(listAdapter, true);
+        if (listAdapter != null && mDragListView != null) {
+            listAdapter.updateResults(mItemArray);
+            mDragListView.setAdapter(listAdapter, true);
+        }
+
         //LayoutWrapContentUpdater updater = new LayoutWrapContentUpdater();
         //updater.wrapContentAgain(grid,true);
     }
 
     @Override
-    public void onDestroy()
-    {
-        for(int i=0;i<mItemArray.size();i++)
-        {
-            db.updateTripPlaceWithPosition(i,mItemArray.get(i).second.getPlaceTripid());
+    public void onDestroy() {
+        for (int i = 0; i < mItemArray.size(); i++) {
+            db.updateTripPlaceWithPosition(i, mItemArray.get(i).second.getChecked(), mItemArray.get(i).second.getPlaceTripid());
         }
         super.onDestroy();
 
     }
 
     @Override
-    public void onPause()
-    {
-        for(int i=0;i<mItemArray.size();i++)
-        {
-            db.updateTripPlaceWithPosition(i,mItemArray.get(i).second.getPlaceTripid());
+    public void onPause() {
+        for (int i = 0; i < mItemArray.size(); i++) {
+            db.updateTripPlaceWithPosition(i, mItemArray.get(i).second.getChecked(), mItemArray.get(i).second.getPlaceTripid());
         }
         super.onPause();
     }
@@ -260,3 +293,7 @@ public class ListFragmentPlacesInTrip extends Fragment {
         }
     }
 }
+
+
+
+

@@ -60,6 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     // TRIP PLACE TABLE
     private static final String KEY_TRIP_ID = "trip_id";
     private static final String KEY_PLACE_ID = "place_id";
+    private static final String CHECKED = "checked";
     private static final String DURATION = "duration";
     private static final String POSITION = "position";
 
@@ -96,6 +97,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             + KEY_PLACE_ID + " TEXT,"
             + POSITION + " INTEGER DEFAULT -1,"
             + DURATION + " INTEGER DEFAULT 0,"
+            + CHECKED + " INTEGER DEFAULT 0,"
             + CREATED_AT + " DATETIME"
             + ")";
 
@@ -249,8 +251,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
                 place.setWebsite(result.getString(result.getColumnIndex(WEBSITE)));
                 int position = result.getInt(result.getColumnIndex(POSITION));
                 int duration = result.getInt(result.getColumnIndex(DURATION));
+                int checked = result.getInt(result.getColumnIndex(CHECKED));
                 int placeTripID = result.getInt(result.getColumnIndex(TRIP_PLACE_TABLE_ID));
-                PlaceTrip newPlaceTrip = new PlaceTrip(place,position,duration);
+                PlaceTrip newPlaceTrip = new PlaceTrip(place,position,duration,checked);
                 newPlaceTrip.setPlaceTripid(placeTripID);
                 placeList.add(newPlaceTrip);
             }while (result.moveToNext());
@@ -346,14 +349,22 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return tripList;
     }
 
-    public int updateTripPlaceWithPosition(int position, long tripPlaceTableID)
+    public int updateTripPlaceWithPosition(int position, int checked, long tripPlaceTableID)
     {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(POSITION,position);
+        values.put(CHECKED,checked);
         return db.update(TABLE_TRIP_PLACE,values,TRIP_PLACE_TABLE_ID +"=" +tripPlaceTableID,null);
     }
 
+    public int updateTripPlaceChecked(int checked, long tripPlaceTableID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(CHECKED,checked);
+        return db.update(TABLE_TRIP_PLACE,values,TRIP_PLACE_TABLE_ID +"=" +tripPlaceTableID,null);
+    }
 
     public int updateTripPlaceDuration(int duration, long tripPlaceTableID )
     {

@@ -10,14 +10,23 @@ public class PlaceTrip extends Place {
     public int duration=0;
     public int position;
     public int placeTripid;
+    public int checked; // this is to see whether the place is added into the itinary
 
-    public PlaceTrip(Place place, int position, int duration)
+    public PlaceTrip(Place place, int position, int duration, int checked)
     {
         super(place);
         this.duration=duration;
         this.position=position;
+        this.checked=checked;
     }
 
+    public int getChecked() {
+        return checked;
+    }
+
+    public void setChecked(int checked) {
+        this.checked = checked;
+    }
 
     public int getPlaceTripid() {
         return placeTripid;

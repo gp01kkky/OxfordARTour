@@ -20,6 +20,8 @@ import android.support.v4.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -59,12 +61,28 @@ public class ItemAdapter extends DragItemAdapter<Pair<Long, PlaceTrip>, ItemAdap
         holder.itemView.setTag(place.getName());
         title.setText(place.getName());
         rating.setText(Float.toString(place.getRating()));
-        address.setText(place.getName());
+        ratingBar.setRating(place.getRating());
+        address.setText(place.getAddress());
         int distanceFromUser = (int)place.getDistance();
+
+
         distance.setText(Integer.toString(distanceFromUser));
         String text = Integer.toString(place.getDuration())+"mins";
         duration.setText(text);
-        String imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference=" + place.getPhoto_reference()+"&key=AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
+        // we must set tag because android use recycle view, getting the recycleview position and update is not accurate
+        checkBox.setTag(place);
+        String imageUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=200&photoreference="+place.getPhoto_reference()+"&key=AIzaSyDqJGehbvGCLpEUxbchILmGK_-3eWyBxgc";
+        if(place.getChecked()==1)
+        {
+            checkBox.setChecked(true);
+        }
+        else
+        {
+            checkBox.setChecked(false);
+        }
+
+        thumbNail.setDefaultImageResId(R.drawable.no_image_icon);
+        thumbNail.setErrorImageResId(R.drawable.no_image_icon);
         thumbNail.setImageUrl(imageUrl,imageLoader);
     }
 
@@ -73,6 +91,8 @@ public class ItemAdapter extends DragItemAdapter<Pair<Long, PlaceTrip>, ItemAdap
     TextView address;
     TextView distance;
     TextView duration;
+    CheckBox checkBox;
+    RatingBar ratingBar;
     ImageLoader imageLoader;
     NetworkImageView thumbNail;
 
@@ -90,14 +110,33 @@ public class ItemAdapter extends DragItemAdapter<Pair<Long, PlaceTrip>, ItemAdap
             this.adapter = parent;
             thumbNail = (NetworkImageView) itemView.findViewById(R.id.thumbnail);
             title = (TextView) itemView.findViewById(R.id.title);
+            ratingBar = (RatingBar) itemView.findViewById(R.id.ratingBar);
             rating = (TextView) itemView.findViewById(R.id.rating);
             address = (TextView) itemView.findViewById(R.id.address);
             duration = (TextView) itemView.findViewById(R.id.duration);
             distance = (TextView) itemView.findViewById(R.id.distance);
-
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
             imageLoader = AppController.getInstance().getImageLoader();
 
+            checkBox.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    // we must set tag because android use recycle view, getting the recycleview position and update is not accurate
+                    PlaceTrip place = (PlaceTrip) v.getTag();
+                    if(place.getChecked()==1)
+                    {
+                        place.setChecked(0);
+                    }
+                    else
+                    {
+                        place.setChecked(1);
+                    }
+                }
+            });
+
         }
+
+
         @Override
         public void onItemClicked(View view) {
             final OnItemClickListener listener = adapter.getOnItemClickListener();

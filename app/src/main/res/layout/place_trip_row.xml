@@ -16,6 +16,15 @@
         android:paddingEnd="10dp"
         android:paddingBottom="10dp">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:id="@+id/imageView3"
+            android:src="@drawable/up_down_icn"
+            android:layout_alignParentLeft="true"
+            android:layout_marginRight="27dp"
+            android:layout_marginEnd="27dp" />
+
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/thumbnail"
             android:layout_width="80dp"
@@ -104,6 +113,16 @@
             android:layout_below="@+id/ratingBar"
             android:layout_toRightOf="@+id/thumbnail"
             android:layout_toEndOf="@+id/thumbnail" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/checkBox"
+            android:checked="false"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
     </RelativeLayout>
 
     <View

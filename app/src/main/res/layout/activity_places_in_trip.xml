@@ -26,13 +26,166 @@
 
         </android.support.design.widget.AppBarLayout>
 
-        <ImageView
+        <!-- For Estimated Time-->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:id="@+id/places_in_trip_image"
-            android:src="@drawable/oxford_image"
-            android:scaleType="fitXY"
-            android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:background="#FFFFFF">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="JOURNEY PLANNER"
+                android:layout_marginLeft="20dp"
+                android:layout_marginBottom="10dp"
+                android:layout_gravity="center_vertical"
+                android:textSize="18sp"
+                android:textColor="@android:color/darker_gray"/>
+
+            <LinearLayout
+                android:id="@+id/start_postion_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/address_icon"
+                    android:layout_gravity="center_vertical"/>
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentLeft="true">
+                    <TextView
+                        android:id="@+id/start_location"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:text="Start:"
+                        android:textColor="@color/places_details_dark_grey"
+                        android:textSize="@dimen/place_details_info_textsize"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/start_location_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Bleinheim Palace"
+                        android:textColor="@color/places_details_light_grey"
+                        android:textSize="@dimen/place_details_info_textsize"
+                        android:layout_alignParentTop="true"
+                        android:layout_toRightOf="@+id/start_location"
+                        android:layout_toEndOf="@+id/start_location" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/end_position_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/finish_flag_icn"
+                    android:layout_gravity="center_vertical"/>
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentLeft="true">
+                    <TextView
+                        android:id="@+id/end_location"
+                        android:layout_width="40dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/places_details_dark_grey"
+                        android:text="End:"
+                        android:textSize="@dimen/place_details_info_textsize"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/end_location_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/places_details_light_grey"
+                        android:text="RadCliffe Camera"
+                        android:textSize="@dimen/place_details_info_textsize"
+                        android:layout_alignParentTop="true"
+                        android:layout_toRightOf="@+id/end_location"
+                        android:layout_toEndOf="@+id/end_location" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/estimated_time_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/time_icon"
+                    android:layout_gravity="center_vertical"/>
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentLeft="true">
+                    <TextView
+                        android:id="@+id/estimated_tour_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:textColor="@color/places_details_dark_grey"
+                        android:text="Estimated Tour Time:"
+                        android:textSize="@dimen/place_details_info_textsize"
+                        android:textStyle="bold"/>
+                    <TextView
+                        android:id="@+id/estimated_tour_time_textview"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/places_details_light_grey"
+                        android:text="1 Hour 50 mins"
+                        android:textSize="@dimen/place_details_info_textsize"
+                        android:layout_alignParentTop="true"
+                        android:layout_toRightOf="@+id/estimated_tour_time"
+                        android:layout_toEndOf="@+id/estimated_tour_time" />
+                </RelativeLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="20dp"
+            android:background="#002147">
+        </RelativeLayout>
+
+
+
+
+
+        <!-- End of Estimated Time-->
+
+
 
         <FrameLayout
             android:id="@+id/container"
